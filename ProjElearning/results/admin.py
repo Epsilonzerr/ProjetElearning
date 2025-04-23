@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Resultat, AIRecommandation
 
-# Register your models here.
+admin.site.register(Resultat)
+admin.site.register(AIRecommandation)

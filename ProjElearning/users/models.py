@@ -7,9 +7,12 @@ class User(AbstractUser):
         ('etudiant', 'Étudiant'),
         ('admin', 'Admin'),
     )
+    adresse = models.TextField(blank=True, null=True)
+    telephone = models.CharField(max_length=20, blank=True, null=True)
+    date_naissance = models.DateField(blank=True, null=True)
+
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    
-    # Ajout des related_name pour résoudre les conflits
+
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
@@ -18,7 +21,6 @@ class User(AbstractUser):
         related_name='custom_user_set',
         related_query_name='user'
     )
-    
     user_permissions = models.ManyToManyField(
         'auth.Permission',
         verbose_name='user permissions',
@@ -27,6 +29,10 @@ class User(AbstractUser):
         related_name='custom_user_permission_set',
         related_query_name='user'
     )
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}" if self.first_name and self.first_name else self.username
+
 
 class Professeur(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
