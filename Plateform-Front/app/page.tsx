@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/language-context"
 import { motion } from "framer-motion"
 import SiteHeader from "@/components/site-header"
 import FooterWithLanguage from "@/components/footer-with-language"
-
+import {getUserData,getEvaluations,joinEvaluation} from "@/lib/apiConfig"
 export default function Home() {
   const { t } = useLanguage()
   const [isLoaded, setIsLoaded] = useState(false)

@@ -25,6 +25,7 @@ import {
   Play,
   Save,
   Share2,
+  TrendingUp,
   Users,
 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -36,8 +37,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useLanguage } from "@/contexts/language-context"
 
 export default function AssessmentDetails({ params }: { params: { id: string } }) {
+  const { t, language } = useLanguage()
   const [extendTime, setExtendTime] = useState(0)
   const [showExtendDialog, setShowExtendDialog] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -70,18 +73,30 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
   const handleExtendTime = () => {
     // In a real app, this would call an API to extend the time
     setShowExtendDialog(false)
-    alert(`Le temps a été prolongé de ${extendTime} minutes.`)
+    alert(
+      language === "fr"
+        ? `Le temps a été prolongé de ${extendTime} minutes.`
+        : `Time has been extended by ${extendTime} minutes.`,
+    )
   }
 
   const handleTogglePause = () => {
     setIsPaused(!isPaused)
     // In a real app, this would call an API to pause/resume the assessment
-    alert(isPaused ? "L'évaluation a été reprise." : "L'évaluation a été mise en pause.")
+    alert(
+      isPaused
+        ? language === "fr"
+          ? "L'évaluation a été reprise."
+          : "The assessment has been resumed."
+        : language === "fr"
+          ? "L'évaluation a été mise en pause."
+          : "The assessment has been paused.",
+    )
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <DashboardHeader userType="professor" userName="Prof. Dupont" />
+      <DashboardHeader userType="professor" userName="Mr Abid" />
 
       <main className="flex-1">
         <div className="container py-6">
@@ -95,7 +110,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">{assessment.title}</h1>
                 <p className="text-muted-foreground">
-                  {assessment.class} • {assessment.subject} • Code: #{assessment.code}
+                  {assessment.class} • {assessment.subject} • {t("code")}: #{assessment.code}
                 </p>
               </div>
             </div>
@@ -104,49 +119,54 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
-                    <MoreHorizontal className="mr-2 h-4 w-4" /> Actions
+                    <MoreHorizontal className="mr-2 h-4 w-4" /> {t("actions")}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Edit className="mr-2 h-4 w-4" /> Modifier
+                    <Edit className="mr-2 h-4 w-4" /> {t("edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Eye className="mr-2 h-4 w-4" /> Prévisualiser
+                    <Eye className="mr-2 h-4 w-4" /> {t("preview")}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Copy className="mr-2 h-4 w-4" /> Dupliquer
+                    <Copy className="mr-2 h-4 w-4" /> {t("duplicate")}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Download className="mr-2 h-4 w-4" /> Exporter
+                    <Download className="mr-2 h-4 w-4" /> {t("export")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setShowExtendDialog(true)}>
-                    <Clock className="mr-2 h-4 w-4" /> Prolonger le temps
+                    <Clock className="mr-2 h-4 w-4" /> {t("extend_time")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleTogglePause}>
                     {isPaused ? (
                       <>
-                        <Play className="mr-2 h-4 w-4" /> Reprendre l'évaluation
+                        <Play className="mr-2 h-4 w-4" /> {t("resume_assessment")}
                       </>
                     ) : (
                       <>
-                        <Pause className="mr-2 h-4 w-4" /> Mettre en pause
+                        <Pause className="mr-2 h-4 w-4" /> {t("pause_assessment")}
                       </>
                     )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/professor/statistics`} className="flex items-center w-full">
+                      <TrendingUp className="mr-2 h-4 w-4" /> {t("view_statistics")}
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
               <Button variant="outline">
-                <Share2 className="mr-2 h-4 w-4" /> Partager
+                <Share2 className="mr-2 h-4 w-4" /> {t("share")}
               </Button>
 
               <Button asChild>
                 <Link href={`/professor/results?id=${params.id}`}>
-                  <FileText className="mr-2 h-4 w-4" /> Voir les résultats
+                  <FileText className="mr-2 h-4 w-4" /> {t("view_results")}
                 </Link>
               </Button>
             </div>
@@ -155,24 +175,25 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
           {isPaused && (
             <Alert className="mb-6 bg-amber-50 border-amber-200">
               <AlertCircle className="h-4 w-4 text-amber-600" />
-              <AlertTitle className="text-amber-600">Évaluation en pause</AlertTitle>
-              <AlertDescription className="text-amber-600">
-                L'évaluation est actuellement en pause. Les étudiants ne peuvent pas y accéder tant qu'elle n'est pas
-                reprise.
-              </AlertDescription>
+              <AlertTitle className="text-amber-600">{t("assessment_paused")}</AlertTitle>
+              <AlertDescription className="text-amber-600">{t("assessment_paused_info")}</AlertDescription>
             </Alert>
           )}
 
           {showExtendDialog && (
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Prolonger le temps</CardTitle>
-                <CardDescription>Ajoutez du temps supplémentaire pour tous les étudiants</CardDescription>
+                <CardTitle>{t("extend_time")}</CardTitle>
+                <CardDescription>
+                  {language === "fr"
+                    ? "Ajoutez du temps supplémentaire pour tous les étudiants"
+                    : "Add additional time for all students"}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
                   <div className="space-y-2 flex-1">
-                    <Label htmlFor="extend-time">Minutes supplémentaires</Label>
+                    <Label htmlFor="extend-time">{t("additional_minutes")}</Label>
                     <Input
                       id="extend-time"
                       type="number"
@@ -183,25 +204,25 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                     />
                   </div>
                   <div className="space-y-2 flex-1">
-                    <Label>Temps actuel</Label>
+                    <Label>{t("current_time")}</Label>
                     <div className="h-10 px-3 py-2 rounded-md border bg-muted/50 flex items-center">
-                      {assessment.timeLimit} minutes
+                      {assessment.timeLimit} {t("minutes")}
                     </div>
                   </div>
                   <div className="space-y-2 flex-1">
-                    <Label>Nouveau temps total</Label>
+                    <Label>{t("new_total_time")}</Label>
                     <div className="h-10 px-3 py-2 rounded-md border bg-muted/50 flex items-center font-medium">
-                      {assessment.timeLimit + extendTime} minutes
+                      {assessment.timeLimit + extendTime} {t("minutes")}
                     </div>
                   </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => setShowExtendDialog(false)}>
-                  Annuler
+                  {t("cancel")}
                 </Button>
                 <Button onClick={handleExtendTime}>
-                  <Clock className="mr-2 h-4 w-4" /> Prolonger le temps
+                  <Clock className="mr-2 h-4 w-4" /> {t("extend_time")}
                 </Button>
               </CardFooter>
             </Card>
@@ -210,100 +231,108 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
           <div className="grid gap-6 md:grid-cols-4 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Participants</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("participants")}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{assessment.participants}</div>
-                <p className="text-xs text-muted-foreground">{assessment.completionRate} ont terminé</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Temps restant</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">2 jours</div>
-                <p className="text-xs text-muted-foreground">Expire le {assessment.expires}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Note moyenne</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{assessment.averageScore}</div>
                 <p className="text-xs text-muted-foreground">
-                  Basée sur {assessment.participants.split("/")[0]} participants
+                  {assessment.completionRate} {t("completed_percentage")}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Code d'accès</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("time_remaining")}</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">2 {t("days")}</div>
+                <p className="text-xs text-muted-foreground">
+                  {t("expires_on")} {assessment.expires}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("average_score")}</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{assessment.averageScore}</div>
+                <p className="text-xs text-muted-foreground">
+                  {language === "fr"
+                    ? `Basée sur ${assessment.participants.split("/")[0]} participants`
+                    : `Based on ${assessment.participants.split("/")[0]} participants`}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("access_code")}</CardTitle>
                 <Copy className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold font-mono">#{assessment.code}</div>
-                <p className="text-xs text-muted-foreground">Cliquez pour copier</p>
+                <p className="text-xs text-muted-foreground">
+                  {language === "fr" ? "Cliquez pour copier" : "Click to copy"}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-              <TabsTrigger value="questions">Questions</TabsTrigger>
-              <TabsTrigger value="participants">Participants</TabsTrigger>
-              <TabsTrigger value="settings">Paramètres</TabsTrigger>
+              <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+              <TabsTrigger value="questions">{t("questions")}</TabsTrigger>
+              <TabsTrigger value="participants">{t("participants")}</TabsTrigger>
+              <TabsTrigger value="settings">{t("settings")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Informations générales</CardTitle>
+                    <CardTitle>{t("general_information")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Titre</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("title")}</h3>
                         <p>{assessment.title}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Classe</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("class")}</h3>
                         <p>{assessment.class}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Matière</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("subject")}</h3>
                         <p>{assessment.subject}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Date de création</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("creation_date")}</h3>
                         <p>{assessment.created}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Date d'expiration</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("expiry_date")}</h3>
                         <p>{assessment.expires}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Statut</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("status")}</h3>
                         <Badge
                           variant="outline"
                           className="bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700"
                         >
-                          Actif
+                          {t("active")}
                         </Badge>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
+                      <h3 className="text-sm font-medium text-muted-foreground">{t("description")}</h3>
                       <p className="mt-1">{assessment.description}</p>
                     </div>
                   </CardContent>
@@ -311,33 +340,35 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Structure de l'évaluation</CardTitle>
+                    <CardTitle>{t("assessment_structure")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Nombre de questions</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("number_of_questions")}</h3>
                         <p>{assessment.questions}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Points totaux</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("total_points")}</h3>
                         <p>{assessment.totalPoints}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Temps limite</h3>
-                        <p>{assessment.timeLimit} minutes</p>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("time_limit")}</h3>
+                        <p>
+                          {assessment.timeLimit} {t("minutes")}
+                        </p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Questions mélangées</h3>
-                        <p>{assessment.settings.shuffleQuestions ? "Oui" : "Non"}</p>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("shuffle_questions")}</h3>
+                        <p>{assessment.settings.shuffleQuestions ? t("yes") : t("no")}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Navigation arrière</h3>
-                        <p>{assessment.settings.preventBackNavigation ? "Désactivée" : "Activée"}</p>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("back_navigation")}</h3>
+                        <p>{assessment.settings.preventBackNavigation ? t("disabled") : t("enabled")}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground">Résultats immédiats</h3>
-                        <p>{assessment.settings.showResultsImmediately ? "Oui" : "Non"}</p>
+                        <h3 className="text-sm font-medium text-muted-foreground">{t("immediate_results")}</h3>
+                        <p>{assessment.settings.showResultsImmediately ? t("yes") : t("no")}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -345,12 +376,12 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
 
                 <Card className="md:col-span-2">
                   <CardHeader>
-                    <CardTitle>Progression des participants</CardTitle>
+                    <CardTitle>{t("participant_progress")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm mb-1">
-                        <span>Participants</span>
+                        <span>{t("participants")}</span>
                         <span className="font-medium">{assessment.participants}</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -367,7 +398,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                       </div>
 
                       <div className="flex items-center justify-between text-sm mb-1">
-                        <span>Terminé</span>
+                        <span>{t("completed")}</span>
                         <span className="font-medium">{assessment.completionRate}</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -376,15 +407,15 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
 
                       <div className="grid grid-cols-3 gap-4 pt-4">
                         <div className="text-center p-3 bg-muted rounded-md">
-                          <div className="text-sm font-medium text-muted-foreground">En attente</div>
+                          <div className="text-sm font-medium text-muted-foreground">{t("waiting")}</div>
                           <div className="text-2xl font-bold">12</div>
                         </div>
                         <div className="text-center p-3 bg-muted rounded-md">
-                          <div className="text-sm font-medium text-muted-foreground">En cours</div>
+                          <div className="text-sm font-medium text-muted-foreground">{t("in_progress")}</div>
                           <div className="text-2xl font-bold">10</div>
                         </div>
                         <div className="text-center p-3 bg-muted rounded-md">
-                          <div className="text-sm font-medium text-muted-foreground">Terminé</div>
+                          <div className="text-sm font-medium text-muted-foreground">{t("finished")}</div>
                           <div className="text-2xl font-bold">18</div>
                         </div>
                       </div>
@@ -398,10 +429,10 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Questions de l'évaluation</CardTitle>
+                    <CardTitle>{t("assessment_questions")}</CardTitle>
                     <Button variant="outline" asChild>
                       <Link href={`/professor/create-assessment?id=${params.id}`}>
-                        <Edit className="mr-2 h-4 w-4" /> Modifier les questions
+                        <Edit className="mr-2 h-4 w-4" /> {t("edit_questions")}
                       </Link>
                     </Button>
                   </div>
@@ -446,19 +477,21 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                       <div key={i} className="border rounded-md p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">Question {i + 1}</span>
+                            <span className="font-medium">
+                              {language === "fr" ? `Question ${i + 1}` : `Question ${i + 1}`}
+                            </span>
                             <Badge variant="outline">
                               {question.type === "multiple-choice"
-                                ? "QCM"
+                                ? t("multiple_choice")
                                 : question.type === "short-answer"
-                                  ? "Réponse courte"
+                                  ? t("short_answer")
                                   : question.type === "matching"
-                                    ? "Appariement"
-                                    : "Question ouverte"}
+                                    ? t("matching")
+                                    : t("open_ended")}
                             </Badge>
                           </div>
                           <span className="text-sm">
-                            {question.points} pt{question.points > 1 ? "s" : ""}
+                            {question.points} {question.points > 1 ? t("points") : t("point")}
                           </span>
                         </div>
 
@@ -489,20 +522,20 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Liste des participants</CardTitle>
+                    <CardTitle>{t("student_list")}</CardTitle>
                     <Button variant="outline">
-                      <Download className="mr-2 h-4 w-4" /> Exporter
+                      <Download className="mr-2 h-4 w-4" /> {t("export_results")}
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-md border">
                     <div className="grid grid-cols-12 border-b bg-muted/50 p-3 text-sm font-medium">
-                      <div className="col-span-4">Étudiant</div>
-                      <div className="col-span-2 text-center">Statut</div>
-                      <div className="col-span-2 text-center">Temps passé</div>
-                      <div className="col-span-2 text-center">Score</div>
-                      <div className="col-span-2 text-right">Actions</div>
+                      <div className="col-span-4">{t("student_name")}</div>
+                      <div className="col-span-2 text-center">{t("status")}</div>
+                      <div className="col-span-2 text-center">{t("time_spent")}</div>
+                      <div className="col-span-2 text-center">{t("score")}</div>
+                      <div className="col-span-2 text-right">{t("actions")}</div>
                     </div>
 
                     {[
@@ -520,15 +553,15 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                         <div className="col-span-2 text-center">
                           {student.status === "completed" ? (
                             <Badge variant="outline" className="bg-green-50 text-green-700">
-                              Terminé
+                              {t("completed")}
                             </Badge>
                           ) : student.status === "in_progress" ? (
                             <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                              En cours
+                              {t("in_progress")}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="bg-gray-50 text-gray-700">
-                              Non commencé
+                              {t("not_started")}
                             </Badge>
                           )}
                         </div>
@@ -536,7 +569,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                         <div className="col-span-2 text-center">{student.score}</div>
                         <div className="col-span-2 text-right">
                           <Button variant="ghost" size="sm">
-                            Détails
+                            {t("details")}
                           </Button>
                         </div>
                       </div>
@@ -549,21 +582,27 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
             <TabsContent value="settings" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Paramètres de l'évaluation</CardTitle>
-                  <CardDescription>Configurez les paramètres de cette évaluation</CardDescription>
+                  <CardTitle>{t("assessment_settings")}</CardTitle>
+                  <CardDescription>
+                    {language === "fr"
+                      ? "Configurez les paramètres de cette évaluation"
+                      : "Configure the settings for this assessment"}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Paramètres généraux</h3>
+                    <h3 className="text-lg font-medium">{t("general_settings")}</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="time-limit">Temps limite (minutes)</Label>
+                        <Label htmlFor="time-limit">
+                          {t("time_limit")} ({t("minutes")})
+                        </Label>
                         <Input id="time-limit" type="number" defaultValue={assessment.timeLimit} min="1" />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="expiry-date">Date d'expiration</Label>
+                        <Label htmlFor="expiry-date">{t("expiry_date")}</Label>
                         <div className="flex">
                           <Input id="expiry-date" type="date" defaultValue="2023-03-17" />
                           <Button variant="ghost" size="icon" className="ml-2">
@@ -575,40 +614,32 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="shuffle-questions">Mélanger les questions</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Les questions seront présentées dans un ordre aléatoire à chaque étudiant
-                        </p>
+                        <Label htmlFor="shuffle-questions">{t("shuffle_questions")}</Label>
+                        <p className="text-sm text-muted-foreground">{t("shuffle_questions_desc")}</p>
                       </div>
                       <Switch id="shuffle-questions" defaultChecked={assessment.settings.shuffleQuestions} />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="prevent-back">Empêcher le retour en arrière</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Les étudiants ne pourront pas revenir aux questions précédentes
-                        </p>
+                        <Label htmlFor="prevent-back">{t("prevent_back_navigation")}</Label>
+                        <p className="text-sm text-muted-foreground">{t("prevent_back_desc")}</p>
                       </div>
                       <Switch id="prevent-back" defaultChecked={assessment.settings.preventBackNavigation} />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="show-results">Afficher les résultats immédiatement</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Les étudiants verront leurs résultats dès qu'ils auront terminé l'évaluation
-                        </p>
+                        <Label htmlFor="show-results">{t("show_results_immediately")}</Label>
+                        <p className="text-sm text-muted-foreground">{t("show_results_desc")}</p>
                       </div>
                       <Switch id="show-results" defaultChecked={assessment.settings.showResultsImmediately} />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="allow-retake">Autoriser les reprises</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Les étudiants pourront reprendre l'évaluation plusieurs fois
-                        </p>
+                        <Label htmlFor="allow-retake">{t("allow_retake")}</Label>
+                        <p className="text-sm text-muted-foreground">{t("allow_retake_desc")}</p>
                       </div>
                       <Switch id="allow-retake" defaultChecked={assessment.settings.allowRetake} />
                     </div>
@@ -616,7 +647,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                 </CardContent>
                 <CardFooter>
                   <Button>
-                    <Save className="mr-2 h-4 w-4" /> Enregistrer les paramètres
+                    <Save className="mr-2 h-4 w-4" /> {t("save_settings")}
                   </Button>
                 </CardFooter>
               </Card>
@@ -627,4 +658,3 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
     </div>
   )
 }
-

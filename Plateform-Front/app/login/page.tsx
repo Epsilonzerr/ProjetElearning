@@ -25,8 +25,6 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [userType, setUserType] = useState("student")
   const [mounted, setMounted] = useState(false)
-
-  // Only render the component after it has mounted to prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -35,7 +33,6 @@ export default function LoginPage() {
     e.preventDefault()
     setError("")
 
-    // Validate email domain based on user type
     const professorDomain = "@iga.ac.ma"
     const studentDomain = "@etud.iga.ac.ma"
     const requiredDomain = userType === "professor" ? professorDomain : studentDomain
@@ -49,7 +46,6 @@ export default function LoginPage() {
       return
     }
 
-    // Simulate login - in a real app, this would call an API
     if (userType === "professor") {
       router.push("/professor/dashboard")
     } else {
