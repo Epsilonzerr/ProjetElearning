@@ -1,5 +1,5 @@
 "use client"
-
+import { use } from "react";
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -39,7 +39,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useLanguage } from "@/contexts/language-context"
 
-export default function AssessmentDetails({ params }: { params: { id: string } }) {
+export default function AssessmentDetails({ params }: { params: Promise<{ id: string }> }) {
+
+  const resolvedParams = use(params); // 👈 UNWRAP the params
+  const evaluationId = resolvedParams.id; // then use safely
   const { t, language } = useLanguage()
   const [extendTime, setExtendTime] = useState(0)
   const [showExtendDialog, setShowExtendDialog] = useState(false)
@@ -47,7 +50,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
 
   // Mock assessment data
   const assessment = {
-    id: params.id,
+    id: evaluationId,
     title: "Programmation Java - Examen final",
     description: "Examen final couvrant tous les aspects de la programmation Java vus en cours.",
     class: "3ème année",
@@ -103,12 +106,12 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" asChild>
-                <Link href="/professor/assessments">
+                <Link href="/professor/evaluations">
                   <ArrowLeft className="h-4 w-4" />
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">{assessment.title}</h1>
+                <h1 className="text-3xl font-bold tracking-tight dark:text-white">{assessment.title}</h1>
                 <p className="text-muted-foreground">
                   {assessment.class} • {assessment.subject} • {t("code")}: #{assessment.code}
                 </p>
@@ -126,14 +129,16 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                   <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Edit className="mr-2 h-4 w-4" /> {t("edit")}
+                    <Link href={`/professor/create-assessment?id=${evaluationId}`} className="flex gap-2 items-center w-full text-white hover:text-white">
+                      <Edit className="mr-2 h-4 w-4" /> {t("edit")}
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <Eye className="mr-2 h-4 w-4" /> {t("preview")}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Copy className="mr-2 h-4 w-4" /> {t("duplicate")}
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuItem>
                     <Download className="mr-2 h-4 w-4" /> {t("export")}
                   </DropdownMenuItem>
@@ -159,16 +164,16 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
+{/* 
               <Button variant="outline">
                 <Share2 className="mr-2 h-4 w-4" /> {t("share")}
-              </Button>
+              </Button> */}
 
-              <Button asChild>
-                <Link href={`/professor/results?id=${params.id}`}>
+              {/* <Button asChild>
+                <Link href={`/professor/results?id=${evaluationId}`}>
                   <FileText className="mr-2 h-4 w-4" /> {t("view_results")}
                 </Link>
-              </Button>
+              </Button> */}
             </div>
           </div>
 
@@ -275,12 +280,13 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                 <CardTitle className="text-sm font-medium">{t("access_code")}</CardTitle>
                 <Copy className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
+              <CardContent onClick={() => navigator.clipboard.writeText(assessment.code)} className="cursor-pointer">
                 <div className="text-2xl font-bold font-mono">#{assessment.code}</div>
                 <p className="text-xs text-muted-foreground">
                   {language === "fr" ? "Cliquez pour copier" : "Click to copy"}
                 </p>
               </CardContent>
+
             </Card>
           </div>
 
@@ -289,7 +295,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="questions">{t("questions")}</TabsTrigger>
               <TabsTrigger value="participants">{t("participants")}</TabsTrigger>
-              <TabsTrigger value="settings">{t("settings")}</TabsTrigger>
+              {/* <TabsTrigger value="settings">{t("settings")}</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
@@ -358,7 +364,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                           {assessment.timeLimit} {t("minutes")}
                         </p>
                       </div>
-                      <div>
+                      {/* <div>
                         <h3 className="text-sm font-medium text-muted-foreground">{t("shuffle_questions")}</h3>
                         <p>{assessment.settings.shuffleQuestions ? t("yes") : t("no")}</p>
                       </div>
@@ -369,7 +375,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground">{t("immediate_results")}</h3>
                         <p>{assessment.settings.showResultsImmediately ? t("yes") : t("no")}</p>
-                      </div>
+                      </div> */}
                     </div>
                   </CardContent>
                 </Card>
@@ -431,7 +437,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                   <div className="flex justify-between items-center">
                     <CardTitle>{t("assessment_questions")}</CardTitle>
                     <Button variant="outline" asChild>
-                      <Link href={`/professor/create-assessment?id=${params.id}`}>
+                      <Link href={`/professor/create-assessment?id=${evaluationId}`}>
                         <Edit className="mr-2 h-4 w-4" /> {t("edit_questions")}
                       </Link>
                     </Button>
@@ -578,7 +584,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                 </CardContent>
               </Card>
             </TabsContent>
-
+{/* 
             <TabsContent value="settings" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -651,7 +657,7 @@ export default function AssessmentDetails({ params }: { params: { id: string } }
                   </Button>
                 </CardFooter>
               </Card>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </main>

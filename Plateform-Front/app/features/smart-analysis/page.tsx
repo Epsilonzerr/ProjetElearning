@@ -277,7 +277,7 @@ export default function SmartAnalysisPage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-primary-blue hover:bg-primary-blue/90 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+                className="bg-primary-blue hover:bg-primary-blue/90 text-white dark:text-white dark:bg-blue-600 dark:hover:bg-blue-700"
               >
                 <Link href="/login">{t("get_started")}</Link>
               </Button>

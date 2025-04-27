@@ -83,6 +83,10 @@ export default function ProfessorStatistics() {
     ],
   }
 
+  // Calculate max count for proper scaling of bars
+  const maxScoreCount = Math.max(...statistics.scoreDistribution.map((item) => item.count))
+  const maxTimeCount = Math.max(...statistics.timeDistribution.map((item) => item.count))
+
   return (
     <div className="min-h-screen flex flex-col">
       <DashboardHeader userType="professor" userName="Mr Abid" />
@@ -97,7 +101,7 @@ export default function ProfessorStatistics() {
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">{t("statistics")}</h1>
+                <h1 className="text-3xl font-bold tracking-tight dark:text-white">{t("statistics")}</h1>
                 <p className="text-muted-foreground">{t("assessment_performance_analysis")}</p>
               </div>
             </div>
@@ -177,8 +181,8 @@ export default function ProfessorStatistics() {
           <Tabs defaultValue="assessments" className="space-y-4">
             <TabsList>
               <TabsTrigger value="assessments">{t("assessments")}</TabsTrigger>
-              <TabsTrigger value="performance">{t("performance")}</TabsTrigger>
-              <TabsTrigger value="challenges">{t("challenges")}</TabsTrigger>
+              {/* <TabsTrigger value="performance">{t("performance")}</TabsTrigger>
+              <TabsTrigger value="challenges">{t("challenges")}</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="assessments" className="space-y-4">
@@ -239,7 +243,7 @@ export default function ProfessorStatistics() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="performance" className="space-y-4">
+            {/* <TabsContent value="performance" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader>
@@ -256,4 +260,114 @@ export default function ProfessorStatistics() {
                               {item.count} {t("students")}
                             </span>
                           </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow\
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary"
+                              style={{ width: `${(item.count / maxScoreCount) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("time_distribution")}</CardTitle>
+                    <CardDescription>{t("time_spent_on_assessments")}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {statistics.timeDistribution.map((item, i) => (
+                        <div key={i} className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span>{item.range}</span>
+                            <span className="font-medium">
+                              {item.count} {t("students")}
+                            </span>
+                          </div>
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary"
+                              style={{ width: `${(item.count / maxTimeCount) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent> */}
+
+            {/* <TabsContent value="challenges" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("challenging_topics")}</CardTitle>
+                  <CardDescription>{t("topics_with_lowest_success_rates")}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {statistics.topChallenges.map((item, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium">{item.topic}</span>
+                          <span
+                            className={`${
+                              item.successRate < 60
+                                ? "text-red-500"
+                                : item.successRate < 70
+                                  ? "text-amber-500"
+                                  : "text-green-500"
+                            }`}
+                          >
+                            {item.successRate}% {t("success_rate")}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${
+                              item.successRate < 60
+                                ? "bg-red-500"
+                                : item.successRate < 70
+                                  ? "bg-amber-500"
+                                  : "bg-green-500"
+                            }`}
+                            style={{ width: `${item.successRate}%` }}
+                          ></div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {t("recommended_action")}:{" "}
+                          {item.successRate < 60 ? t("review_material") : t("additional_exercises")}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-lg font-medium mb-4">{t("improvement_suggestions")}</h3>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <div className="rounded-full h-1.5 w-1.5 bg-primary mt-1.5"></div>
+                        <span>{t("provide_additional_resources_for_design_patterns")}</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="rounded-full h-1.5 w-1.5 bg-primary mt-1.5"></div>
+                        <span>{t("create_interactive_exercises_for_complex_sql")}</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="rounded-full h-1.5 w-1.5 bg-primary mt-1.5"></div>
+                        <span>{t("organize_review_sessions_for_interfaces_and_abstract_classes")}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent> */}
+          </Tabs>
+        </div>
+      </main>
+    </div>
+  )
+}

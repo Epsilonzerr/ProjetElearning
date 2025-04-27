@@ -202,7 +202,7 @@ export default function CreateAssessment() {
       alert(`${t("assessment_created_success")} ${t("access_code")}: #${assessmentCode}`)
     }
 
-    router.push("/professor/assessments")
+    router.push("/professor/evaluations")
   }
 
   const handleDownload = () => {
@@ -232,7 +232,7 @@ export default function CreateAssessment() {
         <div className="container py-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight dark:text-white">
                 {isEditing ? t("edit_assessment") : t("create_assessment")}
               </h1>
               <p className="text-muted-foreground">{t("configure_assessment_add_questions")}</p>

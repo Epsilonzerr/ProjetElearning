@@ -57,7 +57,7 @@ export default function Home() {
   const testimonials = [
     {
       quote: t("testimonial_1"),
-      author: "Dr. Mohammed Alami",
+      author: "Mme. Hassna Akhasbi",
       role: t("professor_computer_science"),
     },
     {
@@ -67,7 +67,7 @@ export default function Home() {
     },
     {
       quote: t("testimonial_3"),
-      author: "Prof. Nadia Benali",
+      author: "Mr. EL ABID AMRANI Noureddine",
       role: t("department_head"),
     },
   ]
@@ -187,7 +187,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {statsData.map((stat, index) => (
+            {/* {statsData.map((stat, index) => (
               <motion.div key={index} variants={cardVariants} className="p-6">
                 <motion.p
                   className="text-4xl font-bold text-primary-blue dark:text-primary-blue"
@@ -200,7 +200,7 @@ export default function Home() {
                 </motion.p>
                 <p className="text-gray-600 dark:text-gray-400 mt-2">{stat.label}</p>
               </motion.div>
-            ))}
+            ))} */}
           </div>
         </div>
       </motion.div>
@@ -286,7 +286,7 @@ export default function Home() {
           </motion.h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {/* {testimonials.map((testimonial, index) => (
               <motion.div key={index} variants={cardVariants} className="bg-gray-50 p-6 rounded-lg border relative">
                 <div className="absolute -top-4 left-6 text-5xl text-primary-blue opacity-20">"</div>
                 <p className="text-gray-700 mb-6 relative z-10">{testimonial.quote}</p>
@@ -300,7 +300,33 @@ export default function Home() {
                   </div>
                 </div>
               </motion.div>
+            ))} */}
+            {testimonials.map((testimonial, index) => (
+              <motion.div 
+                key={index} 
+                variants={cardVariants} 
+                className="bg-gray-50 p-6 rounded-lg border flex flex-col justify-between h-full relative"
+              >
+                <div className="absolute -top-4 left-6 text-5xl text-primary-blue opacity-20">"</div>
+                
+                {/* This div will grow and push the author to the bottom */}
+                <div className="mb-6 relative z-10">
+                  <p className="text-gray-700">{testimonial.quote}</p>
+                </div>
+
+                {/* Author info stays at the bottom */}
+                <div className="flex items-center mt-auto">
+                  <div className="w-10 h-10 rounded-full bg-primary-blue/20 flex items-center justify-center text-primary-blue font-bold">
+                    {testimonial.author.charAt(0)}
+                  </div>
+                  <div className="ml-3">
+                    <p className="font-semibold">{testimonial.author}</p>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                  </div>
+                </div>
+              </motion.div>
             ))}
+
           </div>
         </div>
       </motion.div>
@@ -325,13 +351,13 @@ export default function Home() {
                     <p className="text-muted-foreground">{t("innovative_platform_desc")}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
+                {/* <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
                     <h3 className="font-semibold">{t("expert_educators")}</h3>
                     <p className="text-muted-foreground">{t("expert_educators_desc")}</p>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
@@ -339,13 +365,13 @@ export default function Home() {
                     <p className="text-muted-foreground">{t("continuous_improvement_desc")}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
+                {/* <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
                     <h3 className="font-semibold">{t("community_support")}</h3>
                     <p className="text-muted-foreground">{t("community_support_desc")}</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </motion.div>
 
@@ -372,7 +398,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">{t("ready_to_start")}</h2>
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">{t("ready_to_start_desc")}</p>
-          <Button asChild size="lg" className="bg-white text-primary-blue hover:bg-gray-100">
+          <Button asChild size="lg" className="bg-white text-primary-blue hover:bg-gray-100 dark:text-white">
             <Link href="/login">{t("get_started_now")}</Link>
           </Button>
         </div>

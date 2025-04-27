@@ -358,8 +358,8 @@ const translations: Translations = {
     en: "For Students",
   },
   students_description: {
-    fr: "Accédez à des évaluations adaptées, recevez des commentaires instantanés et suivez votre progression pour améliorer vos compétences.",
-    en: "Access tailored assessments, receive instant feedback, and track your progress to improve your skills.",
+    fr: "Accédez à des évaluations adaptées, suivez votre progression pour améliorer vos compétences.",
+    en: "Access tailored assessments, track your progress to improve your skills.",
   },
   smart_analysis: {
     fr: "Analyse intelligente",
@@ -700,8 +700,8 @@ const translations: Translations = {
     en: "How can I start using the platform?",
   },
   faq_answer_1: {
-    fr: "Pour commencer, créez un compte en utilisant votre email académique. Une fois inscrit, vous aurez accès à toutes les fonctionnalités correspondant à votre rôle (étudiant ou enseignant).",
-    en: "To get started, create an account using your academic email. Once registered, you will have access to all features corresponding to your role (student or teacher).",
+    fr: "Pour commencer, se connecter en utilisant votre email de l'IGA. Une fois connecté, vous aurez accès à toutes les fonctionnalités correspondant à votre rôle (étudiant ou enseignant).",
+    en: "To get started, log in using your IGA email. Once logged in, you will have access to all the features corresponding to your role (student or teacher).",
   },
   faq_question_2: {
     fr: "La plateforme est-elle accessible sur mobile?",
@@ -740,8 +740,8 @@ const translations: Translations = {
     en: "Ready to Start?",
   },
   ready_to_start_desc: {
-    fr: "Rejoignez des milliers d'étudiants et d'enseignants qui transforment leur expérience éducative avec la plateforme d'évaluation IGA.",
-    en: "Join thousands of students and teachers transforming their educational experience with the IGA Assessment Platform.",
+    fr: "Rejoignez des étudiants et des enseignants qui transforment leur expérience éducative avec la plateforme d'évaluation IGA en développement.",
+    en: "Join students and teachers who are transforming their educational experience with the IGA assessment platform in development.",
   },
   get_started_now: {
     fr: "Commencer maintenant",
@@ -756,28 +756,28 @@ const translations: Translations = {
     en: "What People Say",
   },
   testimonial_1: {
-    fr: "La plateforme IGA a révolutionné ma façon d'enseigner. Les analyses détaillées me permettent d'identifier rapidement les concepts que mes étudiants trouvent difficiles et d'adapter mon enseignement en conséquence.",
+    fr: "La plateforme va révolutionner ma façon d'enseigner. Les analyses détaillées me permettront d'identifier rapidement les concepts que mes étudiants trouvent difficiles et d'adapter mon enseignement en conséquence.",
     en: "The IGA platform has revolutionized my teaching. The detailed analytics allow me to quickly identify concepts that my students find challenging and adapt my teaching accordingly.",
   },
   testimonial_2: {
-    fr: "En tant qu'étudiante, j'apprécie énormément le feedback immédiat et les recommandations personnalisées. Cela m'a aidée à améliorer mes compétences en programmation de manière significative.",
-    en: "As a student, I greatly appreciate the immediate feedback and personalized recommendations. It has helped me improve my programming skills significantly.",
+    fr: "En tant qu'étudiante, j'apprécie beaucoup les recommandations personnalisées. Cela m'aidera à améliorer mes compétences en programmation de manière significative.",
+    en: "As a student, I greatly appreciate personalized recommendations. They will help me significantly improve my programming skills.",
   },
   testimonial_3: {
     fr: "L'intégration de cette plateforme dans notre département a considérablement amélioré nos méthodes d'évaluation et nos résultats académiques. Un outil indispensable pour l'éducation moderne.",
     en: "Integrating this platform into our department has significantly improved our assessment methods and academic outcomes. An essential tool for modern education.",
   },
   professor_computer_science: {
-    fr: "Professeur d'Informatique",
-    en: "Professor of Computer Science",
+    fr: "Professeur de réseau informatique",
+    en: "Computer Network Professor",
   },
   student_engineering: {
-    fr: "Étudiante en Génie",
-    en: "Engineering Student",
+    fr: "Étudiante en Génie Informatique",
+    en: "Software Engineering Student",
   },
   department_head: {
-    fr: "Chef de Département",
-    en: "Department Head",
+    fr: "Professeur de developpement logiciel",
+    en: "Software Development Professor",
   },
   why_choose_us: {
     fr: "Pourquoi nous choisir",
@@ -1189,10 +1189,6 @@ const translations: Translations = {
   tab_switching_monitored: {
     fr: "Changement d'onglet/fenêtre surveillé",
     en: "Tab/window switching monitored",
-  },
-  webcam_monitoring: {
-    fr: "Surveillance par webcam activée",
-    en: "Webcam monitoring enabled",
   },
   external_resources_blocked: {
     fr: "Accès aux ressources externes bloqué",

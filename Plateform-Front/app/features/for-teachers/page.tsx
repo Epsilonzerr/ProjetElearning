@@ -237,7 +237,7 @@ export default function ForTeachersPage() {
                       M
                     </div>
                     <div className="ml-3">
-                      <p className="font-semibold dark:text-white">Dr. Mohammed Alami</p>
+                      <p className="font-semibold dark:text-white">Mme Hassna Akhasbi</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{t("professor_computer_science")}</p>
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export default function ForTeachersPage() {
                       N
                     </div>
                     <div className="ml-3">
-                      <p className="font-semibold dark:text-white">Prof. Nadia Benali</p>
+                      <p className="font-semibold dark:text-white">Prof. EL ABID AMRANI Noureddine</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{t("department_head")}</p>
                     </div>
                   </div>
@@ -272,7 +272,7 @@ export default function ForTeachersPage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-primary-blue hover:bg-primary-blue/90 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+                className="bg-primary-blue hover:bg-primary-blue/90 hover:text-white text-white dark:bg-blue-600 dark:hover:bg-blue-700"
               >
                 <Link href="/login">{t("get_started")}</Link>
               </Button>

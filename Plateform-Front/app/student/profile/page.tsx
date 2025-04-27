@@ -41,7 +41,7 @@ export default function StudentProfile() {
 
       <main className="flex-1 bg-slate-50 dark:bg-gray-900">
         <div className="container py-6">
-          <h1 className="text-2xl font-bold tracking-tight mb-6">{t("profile")}</h1>
+          <h1 className="text-2xl font-bold tracking-tight mb-6 dark:text-white">{t("profile")}</h1>
 
           {saveSuccess && (
             <Alert className="mb-6 bg-green-50 border-green-200">

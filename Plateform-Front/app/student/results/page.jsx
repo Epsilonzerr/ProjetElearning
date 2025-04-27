@@ -248,7 +248,7 @@ export default function ResultsPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">{assessment.title}</h1>
+              <h1 className="text-2xl font-bold tracking-tight dark:text-white">{assessment.title}</h1>
               <p className="text-muted-foreground">
                 {assessment.professor} • {assessment.class} • {assessment.date}
               </p>

@@ -95,12 +95,12 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#f7f9fa] dark:bg-[#1a1a1a]">
       <SiteHeader />
 
       <div className="container mx-auto px-4 py-12 max-w-7xl flex-grow">
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">{t("contact_us")}</h1>
+          <h1 className="text-4xl font-bold mb-4 dark:text-white">{t("contact_us")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("contact_description")}</p>
         </motion.div>
 
@@ -122,7 +122,7 @@ export default function ContactPage() {
               </div>
             ) : (
               <>
-                <h2 className="text-2xl font-bold mb-6">{t("send_us_message")}</h2>
+                <h2 className="text-2xl font-bold mb-6 dark:text-white">{t("send_us_message")}</h2>
 
                 {formError && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">{formError}</div>
@@ -202,12 +202,12 @@ export default function ContactPage() {
             animate="visible"
             variants={staggerContainer}
           >
-            <h2 className="text-2xl font-bold mb-6">{t("contact_information")}</h2>
+            <h2 className="text-2xl font-bold mb-6 dark:text-white">{t("contact_information")}</h2>
 
             <motion.div variants={fadeIn} className="flex items-start mb-6">
               <MapPin className="h-5 w-5 text-primary mt-1 mr-3" />
               <div>
-                <h3 className="font-medium">{t("address")}</h3>
+                <h3 className="font-medium dark:text-white">{t("address")}</h3>
                 <p className="text-muted-foreground">
                   Institut supérieur du Génie Appliqué
                   <br />
@@ -223,7 +223,7 @@ export default function ContactPage() {
             <motion.div variants={fadeIn} className="flex items-start mb-6">
               <Phone className="h-5 w-5 text-primary mt-1 mr-3" />
               <div>
-                <h3 className="font-medium">{t("phone")}</h3>
+                <h3 className="font-medium dark:text-white">{t("phone")}</h3>
                 <p className="text-muted-foreground">+212 522 123 456</p>
                 <p className="text-muted-foreground">+212 522 789 012</p>
               </div>
@@ -232,7 +232,7 @@ export default function ContactPage() {
             <motion.div variants={fadeIn} className="flex items-start mb-6">
               <Mail className="h-5 w-5 text-primary mt-1 mr-3" />
               <div>
-                <h3 className="font-medium">{t("email")}</h3>
+                <h3 className="font-medium dark:text-white">{t("email")}</h3>
                 <p className="text-muted-foreground">contact@iga-platform.ma</p>
                 <p className="text-muted-foreground">support@iga-platform.ma</p>
               </div>
@@ -241,7 +241,7 @@ export default function ContactPage() {
             <motion.div variants={fadeIn} className="flex items-start mb-8">
               <Clock className="h-5 w-5 text-primary mt-1 mr-3" />
               <div>
-                <h3 className="font-medium">{t("office_hours")}</h3>
+                <h3 className="font-medium dark:text-white">{t("office_hours")}</h3>
                 <p className="text-muted-foreground">{t("monday_friday")}: 8:30 - 17:00</p>
                 <p className="text-muted-foreground">{t("saturday")}: 9:00 - 13:00</p>
                 <p className="text-muted-foreground">
@@ -252,7 +252,7 @@ export default function ContactPage() {
 
             <Separator className="my-6" />
 
-            <h3 className="font-medium mb-4">{t("follow_us")}</h3>
+            <h3 className="font-medium mb-4 dark:text-white">{t("follow_us")}</h3>
             <div className="flex space-x-4">
               <a
                 href="#"
@@ -300,7 +300,7 @@ export default function ContactPage() {
         </motion.div>
 
         <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center">
-          <h2 className="text-2xl font-bold mb-4">{t("faq_contact")}</h2>
+          <h2 className="text-2xl font-bold mb-4 dark:text-white">{t("faq_contact")}</h2>
           <p className="text-muted-foreground mb-6">{t("faq_contact_description")}</p>
           <Button variant="outline" onClick={() => (window.location.href = "/about#faq")}>
             {t("view_faq")}
