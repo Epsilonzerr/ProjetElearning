@@ -539,7 +539,7 @@ export default function AssessmentDetails({ params }: { params: Promise<{ id: st
                     <div className="grid grid-cols-12 border-b bg-muted/50 p-3 text-sm font-medium">
                       <div className="col-span-4">{t("student_name")}</div>
                       <div className="col-span-2 text-center">{t("status")}</div>
-                      <div className="col-span-2 text-center">{t("time_spent")}</div>
+                      {/* <div className="col-span-2 text-center">{t("time_spent")}</div> */}
                       <div className="col-span-2 text-center">{t("score")}</div>
                       <div className="col-span-2 text-right">{t("actions")}</div>
                     </div>
@@ -571,7 +571,7 @@ export default function AssessmentDetails({ params }: { params: Promise<{ id: st
                             </Badge>
                           )}
                         </div>
-                        <div className="col-span-2 text-center">{student.time}</div>
+                        {/* <div className="col-span-2 text-center">{student.time}</div> */}
                         <div className="col-span-2 text-center">{student.score}</div>
                         <div className="col-span-2 text-right">
                           <Button variant="ghost" size="sm">

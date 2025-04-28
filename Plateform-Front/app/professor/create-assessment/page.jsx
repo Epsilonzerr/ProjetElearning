@@ -26,6 +26,7 @@ const mockAssessments = [
     subject: "prog",
     timeLimit: 60,
     autoCorrect: true,
+    assessmentType: "sommative",
     questions: [
       {
         id: "q1",
@@ -58,6 +59,7 @@ const mockAssessments = [
     subject: "db",
     timeLimit: 45,
     autoCorrect: true,
+    assessmentType: "sommative",
     questions: [
       {
         id: "q1",
@@ -82,6 +84,7 @@ const mockAssessments = [
     subject: "ai",
     timeLimit: 0, // No time limit for project
     autoCorrect: false,
+    assessmentType: "entrainement",
     questions: [
       {
         id: "q1",
@@ -120,6 +123,8 @@ export default function CreateAssessment() {
   const [selectedClass, setSelectedClass] = useState("3a")
   const [selectedSubject, setSelectedSubject] = useState("prog")
   const [deadlineDate, setDeadlineDate] = useState("")
+  const [deadlineTime, setDeadlineTime] = useState("23:59")
+  const [assessmentType, setAssessmentType] = useState("sommative")
   const [isLoading, setIsLoading] = useState(isEditing)
 
   // Load assessment data if editing
@@ -140,6 +145,7 @@ export default function CreateAssessment() {
           setAutoCorrect(assessment.autoCorrect)
           setSelectedClass(assessment.class)
           setSelectedSubject(assessment.subject)
+          setAssessmentType(assessment.assessmentType || "sommative")
           if (assessment.deadlineDate) {
             setDeadlineDate(assessment.deadlineDate)
           } else {
@@ -147,6 +153,9 @@ export default function CreateAssessment() {
             const defaultDate = new Date()
             defaultDate.setDate(defaultDate.getDate() + 7)
             setDeadlineDate(defaultDate.toISOString().split("T")[0])
+          }
+          if (assessment.deadlineTime) {
+            setDeadlineTime(assessment.deadlineTime)
           }
         }
         setIsLoading(false)
@@ -202,7 +211,7 @@ export default function CreateAssessment() {
       alert(`${t("assessment_created_success")} ${t("access_code")}: #${assessmentCode}`)
     }
 
-    router.push("/professor/evaluations")
+    router.push("/professor/assessments")
   }
 
   const handleDownload = () => {
@@ -282,12 +291,42 @@ export default function CreateAssessment() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="assessment-type">{t("assessment_type")}</Label>
+                    <Select value={assessmentType} onValueChange={setAssessmentType}>
+                      <SelectTrigger id="assessment-type">
+                        <SelectValue placeholder={t("select_assessment_type")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sommative">{t("sommative_assessment")}</SelectItem>
+                        <SelectItem value="entrainement">{t("training_assessment")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {assessmentType === "sommative"
+                        ? t("sommative_assessment_description")
+                        : t("training_assessment_description")}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="deadline-date">{t("deadline_date")}</Label>
                     <Input
                       id="deadline-date"
                       type="date"
                       value={deadlineDate}
                       onChange={(e) => setDeadlineDate(e.target.value)}
+                      disabled={assessmentType === "entrainement"}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="deadline-time">{t("deadline_time")}</Label>
+                    <Input
+                      id="deadline-time"
+                      type="time"
+                      value={deadlineTime}
+                      onChange={(e) => setDeadlineTime(e.target.value)}
+                      disabled={assessmentType === "entrainement"}
                     />
                   </div>
 
@@ -302,10 +341,13 @@ export default function CreateAssessment() {
                         value={timeLimit}
                         onChange={(e) => setTimeLimit(Number.parseInt(e.target.value))}
                         min={0}
+                        disabled={assessmentType === "entrainement"}
                       />
                       <Clock className="h-4 w-4 text-muted-foreground" />
                     </div>
-                    <p className="text-xs text-muted-foreground">{t("zero_for_no_time_limit")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {assessmentType === "entrainement" ? t("training_no_time_limit") : t("zero_for_no_time_limit")}
+                    </p>
                   </div>
 
                   <div className="flex items-center space-x-2 pt-2">
@@ -641,12 +683,16 @@ export default function CreateAssessment() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>
-                    {timeLimit > 0 ? (
-                      <>
-                        {t("time_limit")}: {timeLimit} {t("minutes")}
-                      </>
+                    {assessmentType === "sommative" ? (
+                      timeLimit > 0 ? (
+                        <>
+                          {t("time_limit")}: {timeLimit} {t("minutes")}
+                        </>
+                      ) : (
+                        <>{t("no_time_limit")}</>
+                      )
                     ) : (
-                      <>{t("no_time_limit")}</>
+                      <>{t("training_assessment_no_time_limit")}</>
                     )}
                   </span>
                 </div>

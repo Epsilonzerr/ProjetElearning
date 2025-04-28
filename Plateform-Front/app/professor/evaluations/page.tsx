@@ -158,17 +158,17 @@ export default function ProfessorEvaluations() {
   ];
 
   // Function to sort evaluations
-  const sortEvaluations = (evaluations) => {
+  const sortEvaluations = (evaluations: Evaluation[]) => {
     const sortedEvaluations = [...evaluations];
 
     switch (sortBy) {
       case "recent":
         return sortedEvaluations.sort(
-          (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+          (a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
         );
       case "oldest":
         return sortedEvaluations.sort(
-          (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
+          (a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime()
         );
       case "name-asc":
         return sortedEvaluations.sort((a, b) => a.title.localeCompare(b.title));
@@ -178,7 +178,7 @@ export default function ProfessorEvaluations() {
         return sortedEvaluations.sort((a, b) => {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
-          return new Date(a.dueDate) - new Date(b.dueDate);
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         });
       default:
         return sortedEvaluations;
@@ -186,7 +186,7 @@ export default function ProfessorEvaluations() {
   };
 
   // Filter evaluations by search query
-  const filterEvaluations = (evaluations) => {
+  const filterEvaluations = (evaluations: Evaluation[]) => {
     if (!searchQuery && typeFilter === "all") return evaluations;
 
     return evaluations.filter((evaluation) => {
@@ -223,7 +223,7 @@ export default function ProfessorEvaluations() {
   );
 
   // Format date based on language
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return language === "fr"
@@ -232,7 +232,7 @@ export default function ProfessorEvaluations() {
   };
 
   // Get status badge
-  const getStatusBadge = (status, type) => {
+  const getStatusBadge = (status: string, type: string) => {
     if (status === "active") {
       return (
         <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
@@ -256,7 +256,7 @@ export default function ProfessorEvaluations() {
   };
 
   // Get type badge
-  const getTypeBadge = (type) => {
+  const getTypeBadge = (type:String) => {
     if (type === "summative") {
       return (
         <Badge
@@ -328,47 +328,54 @@ export default function ProfessorEvaluations() {
   };
   
 
-  const handleDelete = (evaluation) => {
+  const handleDelete = (evaluation: Evaluation) => {
     setCurrentEvaluation(evaluation);
     setShowDeleteDialog(true);
   };
 
-  const handleContinueEditing = (evaluation) => {
+  const handleContinueEditing = (evaluation: Evaluation) => {
     // In a real app, this would navigate to the edit page
     window.location.href = `/professor/create-evaluation?id=${evaluation.id}`;
   };
 
-  const handlePublish = (evaluation) => {
+  const handlePublish = (evaluation: Evaluation) => {
     setCurrentEvaluation(evaluation);
     setShowPublishDialog(true);
   };
 
-  const handleDownload = (evaluation) => {
+  const handleDownload = (evaluation: Evaluation) => {
     setCurrentEvaluation(evaluation);
     setShowDownloadDialog(true);
   };
 
-  const handleViewAnalysis = (evaluation) => {
+  const handleViewAnalysis = (evaluation: Evaluation) => {
     setCurrentEvaluation(evaluation);
     setShowAnalysisDialog(true);
   };
 
   const confirmEdit = () => {
     // In a real app, this would save the changes
-    alert(t("editing_evaluation", { title: currentEvaluation.title }));
+    // alert(t("editing_evaluation", { title: currentEvaluation.title }));
+    if (currentEvaluation) {
+      alert(`${t("editing_evaluation")}: ${currentEvaluation.title}`);
+    }
     setShowEditDialog(false);
   };
 
   const confirmViewDetails = () => {
     // In a real app, this would navigate to the details page
-    window.location.href = `/professor/assessment/${currentEvaluation.id}`;
+    if (currentEvaluation) {
+      window.location.href = `/professor/assessment/${currentEvaluation.id}`;
+    }
     setShowDetailsDialog(false);
   };
 
   const confirmCopyCode = () => {
     // In a real app, this would copy the code to clipboard
-    navigator.clipboard.writeText(currentEvaluation.code);
-    alert(t("code_copied_to_clipboard", { code: currentEvaluation.code }));
+    if (currentEvaluation) {
+      navigator.clipboard.writeText(currentEvaluation.code);
+      alert(`${t("code_copied_to_clipboard")}: ${currentEvaluation.code}`);
+    }
     setShowCopyCodeDialog(false);
   };
 
@@ -483,9 +490,9 @@ export default function ProfessorEvaluations() {
                 <div className="text-2xl font-bold">
                   {activeEvaluations.length}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   {t("active_assessments_change_text")}
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 
@@ -498,9 +505,9 @@ export default function ProfessorEvaluations() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">145</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   {t("students_change_text")}
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 
@@ -513,9 +520,9 @@ export default function ProfessorEvaluations() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">14.2/20</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   {t("score_change_text")}
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 

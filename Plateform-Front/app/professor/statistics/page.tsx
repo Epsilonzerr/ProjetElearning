@@ -1,20 +1,40 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import DashboardHeader from "@/components/dashboard-header"
-import { ArrowLeft, ArrowUpDown, Download, FileText, Search, TrendingUp, Users } from "lucide-react"
-import { useLanguage } from "@/contexts/language-context"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DashboardHeader from "@/components/dashboard-header";
+import {
+  ArrowLeft,
+  ArrowUpDown,
+  Download,
+  FileText,
+  Search,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function ProfessorStatistics() {
-  const { t } = useLanguage()
+  const { t } = useLanguage();
   // Add the selectedSortOption state
-  const [selectedSortOption, setSelectedSortOption] = useState("date")
+  const [selectedSortOption, setSelectedSortOption] = useState("date");
 
   // Mock statistics data
   const statistics = {
@@ -81,11 +101,15 @@ export default function ProfessorStatistics() {
       { topic: t("sorting_algorithms"), successRate: 68 },
       { topic: t("complex_sql_queries"), successRate: 55 },
     ],
-  }
+  };
 
   // Calculate max count for proper scaling of bars
-  const maxScoreCount = Math.max(...statistics.scoreDistribution.map((item) => item.count))
-  const maxTimeCount = Math.max(...statistics.timeDistribution.map((item) => item.count))
+  const maxScoreCount = Math.max(
+    ...statistics.scoreDistribution.map((item) => item.count)
+  );
+  const maxTimeCount = Math.max(
+    ...statistics.timeDistribution.map((item) => item.count)
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -101,28 +125,43 @@ export default function ProfessorStatistics() {
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight dark:text-white">{t("statistics")}</h1>
-                <p className="text-muted-foreground">{t("assessment_performance_analysis")}</p>
+                <h1 className="text-3xl font-bold tracking-tight dark:text-white">
+                  {t("statistics")}
+                </h1>
+                <p className="text-muted-foreground">
+                  {t("assessment_performance_analysis")}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder={t("search")} className="pl-8 w-[200px]" />
+                <Input
+                  type="search"
+                  placeholder={t("search")}
+                  className="pl-8 w-[200px]"
+                />
               </div>
 
-              <Select value={selectedSortOption} onValueChange={setSelectedSortOption}>
+              {/* <Select
+                value={selectedSortOption}
+                onValueChange={setSelectedSortOption}
+              >
                 <SelectTrigger className="w-[180px]">
                   <ArrowUpDown className="mr-2 h-4 w-4" />
                   <SelectValue placeholder={t("sort_by")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="date">{t("sort_by_date")}</SelectItem>
-                  <SelectItem value="alpha">{t("sort_alphabetically")}</SelectItem>
-                  <SelectItem value="participants">{t("sort_by_participants")}</SelectItem>
+                  <SelectItem value="alpha">
+                    {t("sort_alphabetically")}
+                  </SelectItem>
+                  <SelectItem value="participants">
+                    {t("sort_by_participants")}
+                  </SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
 
               <Button variant="outline">
                 <Download className="mr-2 h-4 w-4" /> {t("export")}
@@ -133,11 +172,15 @@ export default function ProfessorStatistics() {
           <div className="grid gap-6 md:grid-cols-4 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("assessments")}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("assessments")}
+                </CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{statistics.overview.totalAssessments}</div>
+                <div className="text-2xl font-bold">
+                  {statistics.overview.totalAssessments}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {statistics.assessments.length} {t("recent_assessments")}
                 </p>
@@ -146,50 +189,93 @@ export default function ProfessorStatistics() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("students")}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("students")}
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{statistics.overview.totalStudents}</div>
-                <p className="text-xs text-muted-foreground">{t("across_3_levels")}</p>
+                <div className="text-2xl font-bold">
+                  {statistics.overview.totalStudents}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t("across_3_levels")}
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("completion_rate")}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("completion_rate")}
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{statistics.overview.completionRate}%</div>
-                <p className="text-xs text-muted-foreground">+2% {t("compared_to_previous_semester")}</p>
+                <div className="text-2xl font-bold">
+                  {statistics.overview.completionRate}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +2% {t("compared_to_previous_semester")}
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("average_score")}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("average_score")}
+                </CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{statistics.overview.averageScore}/20</div>
-                <p className="text-xs text-muted-foreground">-0.3 {t("compared_to_previous_semester")}</p>
+                <div className="text-2xl font-bold">
+                  {statistics.overview.averageScore}/20
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  -0.3 {t("compared_to_previous_semester")}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           <Tabs defaultValue="assessments" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="assessments">{t("assessments")}</TabsTrigger>
-              {/* <TabsTrigger value="performance">{t("performance")}</TabsTrigger>
-              <TabsTrigger value="challenges">{t("challenges")}</TabsTrigger> */}
-            </TabsList>
+            <div className="flex items-center justify-between mb-4">
+              <TabsList className="flex">
+                <TabsTrigger value="assessments">
+                  {t("assessments")}
+                </TabsTrigger>
+                {/* If you have other tabs later */}
+              </TabsList>
+
+              {/* Sorting filter aligned at the extreme right */}
+              <Select
+                value={selectedSortOption}
+                onValueChange={setSelectedSortOption}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <ArrowUpDown className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder={t("sort_by")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">{t("sort_by_date")}</SelectItem>
+                  <SelectItem value="alpha">
+                    {t("sort_alphabetically")}
+                  </SelectItem>
+                  <SelectItem value="participants">
+                    {t("sort_by_participants")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <TabsContent value="assessments" className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>{t("assessment_results")}</CardTitle>
-                  <CardDescription>{t("performance_overview_by_assessment")}</CardDescription>
+                  <CardDescription>
+                    {t("performance_overview_by_assessment")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-md border">
@@ -198,42 +284,77 @@ export default function ProfessorStatistics() {
                         {t("assessment")} <ArrowUpDown className="h-3 w-3" />
                       </div>
                       <div className="col-span-2 text-center">{t("class")}</div>
-                      <div className="col-span-1 text-center">{t("students")}</div>
-                      <div className="col-span-1 text-center">{t("completion")}</div>
-                      <div className="col-span-1 text-center">{t("success")}</div>
-                      <div className="col-span-1 text-center">{t("avg_score")}</div>
-                      <div className="col-span-1 text-center">{t("avg_time")}</div>
-                      <div className="col-span-1 text-right">{t("actions")}</div>
+                      <div className="col-span-1 text-center">
+                        {t("students")}
+                      </div>
+                      <div className="col-span-1 text-center">
+                        {t("completion")}
+                      </div>
+                      <div className="col-span-1 text-center">
+                        {t("success")}
+                      </div>
+                      <div className="col-span-1 text-center">
+                        {t("avg_score")}
+                      </div>
+                      <div className="col-span-1 text-center">
+                        {t("avg_time")}
+                      </div>
+                      <div className="col-span-1 text-right">
+                        {t("actions")}
+                      </div>
                     </div>
 
                     {statistics.assessments
                       .sort((a, b) => {
                         if (selectedSortOption === "date") {
                           return (
-                            new Date(b.date.split("/").reverse().join("-")) -
-                            new Date(a.date.split("/").reverse().join("-"))
-                          )
+                            new Date(
+                              b.date.split("/").reverse().join("-")
+                            ).getTime() -
+                            new Date(
+                              a.date.split("/").reverse().join("-")
+                            ).getTime()
+                          );
                         } else if (selectedSortOption === "alpha") {
-                          return a.title.localeCompare(b.title)
+                          return a.title.localeCompare(b.title);
                         } else if (selectedSortOption === "participants") {
-                          return b.students - a.students
+                          return b.students - a.students;
                         }
-                        return 0
+                        return 0;
                       })
                       .map((assessment, i) => (
-                        <div key={i} className="grid grid-cols-12 border-b p-3 text-sm">
-                          <div className="col-span-4 font-medium">{assessment.title}</div>
-                          <div className="col-span-2 text-center">{assessment.class}</div>
-                          <div className="col-span-1 text-center">{assessment.students}</div>
-                          <div className="col-span-1 text-center">{assessment.completionRate}%</div>
-                          <div className="col-span-1 text-center">{assessment.successRate}%</div>
-                          <div className="col-span-1 text-center">{assessment.averageScore}/20</div>
+                        <div
+                          key={i}
+                          className="grid grid-cols-12 border-b p-3 text-sm"
+                        >
+                          <div className="col-span-4 font-medium">
+                            {assessment.title}
+                          </div>
+                          <div className="col-span-2 text-center">
+                            {assessment.class}
+                          </div>
+                          <div className="col-span-1 text-center">
+                            {assessment.students}
+                          </div>
+                          <div className="col-span-1 text-center">
+                            {assessment.completionRate}%
+                          </div>
+                          <div className="col-span-1 text-center">
+                            {assessment.successRate}%
+                          </div>
+                          <div className="col-span-1 text-center">
+                            {assessment.averageScore}/20
+                          </div>
                           <div className="col-span-1 text-center">
                             {assessment.averageTime} {t("min")}
                           </div>
                           <div className="col-span-1 text-right">
                             <Button variant="ghost" size="sm" asChild>
-                              <Link href={`/professor/assessment/${assessment.id}`}>{t("details")}</Link>
+                              <Link
+                                href={`/professor/assessment/${assessment.id}`}
+                              >
+                                {t("details")}
+                              </Link>
                             </Button>
                           </div>
                         </div>
@@ -369,5 +490,5 @@ export default function ProfessorStatistics() {
         </div>
       </main>
     </div>
-  )
+  );
 }
