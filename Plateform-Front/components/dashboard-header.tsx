@@ -75,6 +75,7 @@ export default function DashboardHeader({
   ];
 
   const getInitials = (name: string) => {
+    if (!name) return "?"; // fallback if name is empty
     return name
       .split(" ")
       .map((n) => n[0])
@@ -86,6 +87,8 @@ export default function DashboardHeader({
     { name: t("dashboard"), href: "/student/dashboard" },
     { name: t("recommendations"), href: "/student/recommendations" },
   ];
+
+  console.log("User Name:", userName);
 
   const professorNavItems = [
     {
@@ -106,7 +109,7 @@ export default function DashboardHeader({
   ];
 
   const navItems = userType === "student" ? studentNavItems : professorNavItems;
-  const unreadCount = notifications.filter((n) => n.unread).length
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white dark:bg-gray-900 dark:border-gray-800">
@@ -190,39 +193,62 @@ export default function DashboardHeader({
               <span className="sr-only">{t("notifications")}</span>
             </Button>
           </Link> */}
-          <DropdownMenu open={showNotifications} onOpenChange={setShowNotifications}>
+          <DropdownMenu
+            open={showNotifications}
+            onOpenChange={setShowNotifications}
+          >
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                {unreadCount > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />}
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
                 <span className="sr-only">{t("notifications")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80" align="end">
               <DropdownMenuLabel className="flex items-center justify-between">
                 <span>{t("notifications")}</span>
-                <Button variant="link" size="sm" className="h-auto p-0 text-xs" asChild>
-                  <Link href={`/${userType}/notifications`}>{t("view_all")}</Link>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto p-0 text-xs"
+                  asChild
+                >
+                  <Link href={`/${userType}/notifications`}>
+                    {t("view_all")}
+                  </Link>
                 </Button>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {notifications.map((notification) => (
-                <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-3">
+                <DropdownMenuItem
+                  key={notification.id}
+                  className="flex flex-col items-start p-3"
+                >
                   <div className="flex w-full justify-between">
                     <span className="font-medium">{notification.title}</span>
-                    <span className="text-xs text-muted-foreground">{notification.time}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {notification.time}
+                    </span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{notification.description}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {notification.description}
+                  </span>
                   {notification.unread && (
                     <div className="mt-1 flex w-full justify-end">
-                      <span className="text-xs text-primary-blue">{t("unread")}</span>
+                      <span className="text-xs text-primary-blue">
+                        {t("unread")}
+                      </span>
                     </div>
                   )}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="justify-center" asChild>
-                <Link href={`/${userType}/notifications`}>{t("see_all_notifications")}</Link>
+                <Link href={`/${userType}/notifications`}>
+                  {t("see_all_notifications")}
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -230,9 +256,14 @@ export default function DashboardHeader({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg" alt={userName} />
-                  <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+                <Avatar className="h-8 w-8 border-2 border-black dark:border-white rounded-full shadow-sm">
+                  {userName ? (
+                    <AvatarFallback className="text-black dark:text-white font-semibold">
+                      {getInitials(userName)}
+                    </AvatarFallback>
+                  ) : (
+                    <AvatarImage src="/placeholder.svg" alt="User" />
+                  )}
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
