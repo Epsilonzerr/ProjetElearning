@@ -46,7 +46,7 @@ export default function AboutPage() {
           <div className="flex items-center gap-4">
             <Button
               asChild
-              className="bg-[#4052a8] hover:bg-[#4052a8]/90 text-white hover:text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+              // className="bg-[#4052a8] hover:bg-[#4052a8]/90 text-white hover:text-primary-blue dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               <Link href="/login">{t("login")}</Link>
             </Button>
@@ -81,7 +81,7 @@ export default function AboutPage() {
             <Button
               asChild
               size="lg"
-              className="bg-white text-primary-blue hover:bg-gray-100 dark:bg-gray-200 dark:hover:bg-gray-300"
+              className="bg-white text-primary-blue hover:bg-gray-100 dark:bg-gray-200 dark:hover:bg-gray-300  hover:text-primary-blue shadow-lg"
             >
               <Link href="/login">{t("get_started")}</Link>
             </Button>

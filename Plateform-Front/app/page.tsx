@@ -124,7 +124,8 @@ export default function Home() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-white text-primary-blue hover:bg-gray-100 shadow-lg dark:bg-white dark:text-primary-blue"
+                  // className="bg-white text-primary-blue hover:bg-gray-100 shadow-lg hover:text-primary-blue shadow-lg"
+                   className="border border-gray-300 bg-white text-primary-blue hover:bg-gray-100 shadow-lg hover:text-primary-blue dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <Link href="/login">{t("login")}</Link>
                 </Button>
@@ -398,7 +399,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">{t("ready_to_start")}</h2>
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">{t("ready_to_start_desc")}</p>
-          <Button asChild size="lg" className="bg-white text-primary-blue hover:bg-gray-100 dark:text-white">
+          <Button asChild size="lg" className="bg-white text-primary-blue dark:text-white hover:bg-gray-100 hover:text-primary-blue shadow-lg">
             <Link href="/login">{t("get_started_now")}</Link>
           </Button>
         </div>
