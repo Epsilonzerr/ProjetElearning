@@ -22,16 +22,20 @@ import {
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { use } from "react";
 
-export default function EvaluationDetails({ params }: { params: { id: string } }) {
-  const { t, language } = useLanguage()
+export default function EvaluationDetails({ params }: { params: Promise<{ id: string }> }) {
+  const { t, language } = useLanguage();
+
+  const resolvedParams = use(params); // 👈 UNWRAP the params
+  const evaluationId = resolvedParams.id; // then use safely
   const [isPaused, setIsPaused] = useState(false)
   const [showExtendTimeDialog, setShowExtendTimeDialog] = useState(false)
   const [additionalMinutes, setAdditionalMinutes] = useState(15)
 
   // Mock evaluation data
   const evaluation = {
-    id: params.id,
+    id: evaluationId,
     title: "Programmation Java - Évaluation finale",
     type: "summative",
     status: "active",
@@ -138,7 +142,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">{evaluation.title}</h1>
+                <h1 className="text-3xl font-bold tracking-tight dark:text-white">{evaluation.title}</h1>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t("active")}</Badge>
                   <Badge variant="outline" className="border-primary-blue text-primary-blue">
@@ -171,9 +175,9 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                 <Share className="mr-2 h-4 w-4" /> {t("share")}
               </Button>
 
-              <Button>
+              {/* <Button>
                 <Settings className="mr-2 h-4 w-4" /> {t("settings")}
-              </Button>
+              </Button> */}
             </div>
           </div>
 
@@ -292,7 +296,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="students">{t("students")}</TabsTrigger>
               <TabsTrigger value="questions">{t("questions")}</TabsTrigger>
-              <TabsTrigger value="settings">{t("settings")}</TabsTrigger>
+              {/* <TabsTrigger value="settings">{t("settings")}</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
@@ -303,20 +307,20 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                 <CardContent>
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
-                      <h3 className="text-sm font-medium mb-2">{t("description")}</h3>
+                      <h3 className="text-sm font-medium mb-2 dark:text-white">{t("description")}</h3>
                       <p className="text-sm text-muted-foreground">{evaluation.description}</p>
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-sm font-medium mb-1">{t("creation_date")}</h3>
+                        <h3 className="text-sm font-medium mb-1 dark:text-white">{t("creation_date")}</h3>
                         <p className="text-sm text-muted-foreground">{formatDate(evaluation.createdDate)}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium mb-1">{t("expiry_date")}</h3>
+                        <h3 className="text-sm font-medium mb-1 dark:text-white">{t("expiry_date")}</h3>
                         <p className="text-sm text-muted-foreground">{formatDate(evaluation.dueDate)}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium mb-1">{t("type")}</h3>
+                        <h3 className="text-sm font-medium mb-1 dark:text-white">{t("type")}</h3>
                         <p className="text-sm text-muted-foreground">{t("summative")}</p>
                       </div>
                     </div>
@@ -336,7 +340,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                         <span className="text-red-600 text-xs">✕</span>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">{t("copy_paste_disabled_info")}</h3>
+                        <h3 className="text-sm font-medium dark:text-white">{t("copy_paste_disabled_info")}</h3>
                         <p className="text-xs text-muted-foreground">{t("copy_paste_disabled_description")}</p>
                       </div>
                     </div>
@@ -345,7 +349,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                         <span className="text-red-600 text-xs">✕</span>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">{t("back_navigation_limited")}</h3>
+                        <h3 className="text-sm font-medium dark:text-white">{t("back_navigation_limited")}</h3>
                         <p className="text-xs text-muted-foreground">{t("back_navigation_description")}</p>
                       </div>
                     </div>
@@ -354,7 +358,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                         <span className="text-amber-600 text-xs">!</span>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">{t("tab_switching_monitored")}</h3>
+                        <h3 className="text-sm font-medium dark:text-white">{t("tab_switching_monitored")}</h3>
                         <p className="text-xs text-muted-foreground">{t("tab_switching_description")}</p>
                       </div>
                     </div>
@@ -363,7 +367,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                         <span className="text-green-600 text-xs">✓</span>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">{t("immediate_results")}</h3>
+                        <h3 className="text-sm font-medium dark:text-white">{t("immediate_results")}</h3>
                         <p className="text-xs text-muted-foreground">{t("immediate_results_description")}</p>
                       </div>
                     </div>
@@ -486,7 +490,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
               </Card>
             </TabsContent>
 
-            <TabsContent value="settings" className="space-y-4">
+            {/* <TabsContent value="settings" className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>{t("assessment_settings")}</CardTitle>
@@ -534,7 +538,7 @@ export default function EvaluationDetails({ params }: { params: { id: string } }
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </main>

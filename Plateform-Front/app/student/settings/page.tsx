@@ -27,7 +27,7 @@ export default function StudentSettingsPage() {
         <div className="container py-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{t("settings")}</h1>
+              <h1 className="text-3xl font-bold tracking-tight dark:text-white">{t("settings")}</h1>
               <p className="text-muted-foreground">{t("manage_account")}</p>
             </div>
           </div>

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,38 +11,84 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, LogOut, Menu, Search, Settings, User, FileText, Users, BarChart3 } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useLanguage } from "@/contexts/language-context"
-import { ThemeToggle } from "@/components/theme-toggle"
-import LanguageSwitcher from "@/components/language-switcher"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  Search,
+  Settings,
+  User,
+  FileText,
+  Users,
+  BarChart3,
+} from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useLanguage } from "@/contexts/language-context";
+import { ThemeToggle } from "@/components/theme-toggle";
+import LanguageSwitcher from "@/components/language-switcher";
+import StaticLogo from "./ui/StaticLogo";
 
 interface DashboardHeaderProps {
-  userType: "student" | "professor" | "admin"
-  userName: string
-  showSearch?: boolean
+  userType: "student" | "professor" | "admin";
+  userName: string;
+  showSearch?: boolean;
 }
 
-export default function DashboardHeader({ userType, userName, showSearch = true }: DashboardHeaderProps) {
-  const { t } = useLanguage()
-  const pathname = usePathname()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export default function DashboardHeader({
+  userType,
+  userName,
+  showSearch = false,
+}: DashboardHeaderProps) {
+  const { t } = useLanguage();
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const notifications = [
+    {
+      id: 1,
+      title: t("new_assessment_available"),
+      description:
+        userType === "professor"
+          ? t("student_submitted_assessment")
+          : t("prof_created_assessment"),
+      time: "5 min ago",
+      unread: true,
+    },
+    {
+      id: 2,
+      title: t("results_available"),
+      description: t("assessment_results_available"),
+      time: "1 hour ago",
+      unread: true,
+    },
+    {
+      id: 3,
+      title: t("reminder"),
+      description: t("assessment_scheduled_tomorrow"),
+      time: "3 hours ago",
+      unread: false,
+    },
+  ];
 
   const getInitials = (name: string) => {
+    if (!name) return "?"; // fallback if name is empty
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   const studentNavItems = [
     { name: t("dashboard"), href: "/student/dashboard" },
     { name: t("recommendations"), href: "/student/recommendations" },
-  ]
+  ];
+
+  console.log("User Name:", userName);
 
   const professorNavItems = [
     {
@@ -60,9 +106,10 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
       href: "/professor/statistics",
       icon: <BarChart3 className="h-4 w-4" />,
     },
-  ]
+  ];
 
-  const navItems = userType === "student" ? studentNavItems : professorNavItems
+  const navItems = userType === "student" ? studentNavItems : professorNavItems;
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white dark:bg-gray-900 dark:border-gray-800">
@@ -75,11 +122,12 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 dark:bg-gray-900 dark:border-gray-800">
+            <SheetContent
+              side="left"
+              className="w-64 dark:bg-gray-900 dark:border-gray-800"
+            >
               <div className="flex flex-col gap-6">
-                <Link href="/" className="flex items-center gap-2">
-                  <img src="/images/evalyo-logo.png" alt="Evalyo" className="h-8" />
-                </Link>
+                <StaticLogo />
                 <nav className="flex flex-col gap-2">
                   {navItems.map((item, i) => (
                     <Link
@@ -100,9 +148,7 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/images/evalyo-logo.png" alt="Evalyo" className="h-8" />
-          </Link>
+          <StaticLogo />
 
           <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item, i) => (
@@ -140,20 +186,84 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
             <ThemeToggle />
           </div>
 
-          <Link href="/notifications" className="relative">
+          {/* <Link href="/notifications" className="relative">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
               <span className="sr-only">{t("notifications")}</span>
             </Button>
-          </Link>
+          </Link> */}
+          <DropdownMenu
+            open={showNotifications}
+            onOpenChange={setShowNotifications}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+                <span className="sr-only">{t("notifications")}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>{t("notifications")}</span>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto p-0 text-xs"
+                  asChild
+                >
+                  <Link href={`/${userType}/notifications`}>
+                    {t("view_all")}
+                  </Link>
+                </Button>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {notifications.map((notification) => (
+                <DropdownMenuItem
+                  key={notification.id}
+                  className="flex flex-col items-start p-3"
+                >
+                  <div className="flex w-full justify-between">
+                    <span className="font-medium">{notification.title}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {notification.time}
+                    </span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {notification.description}
+                  </span>
+                  {notification.unread && (
+                    <div className="mt-1 flex w-full justify-end">
+                      <span className="text-xs text-primary-blue">
+                        {t("unread")}
+                      </span>
+                    </div>
+                  )}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="justify-center" asChild>
+                <Link href={`/${userType}/notifications`}>
+                  {t("see_all_notifications")}
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg" alt={userName} />
-                  <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+                <Avatar className="h-8 w-8 border-2 border-black dark:border-white rounded-full shadow-sm">
+                  {userName ? (
+                    <AvatarFallback className="text-black dark:text-white font-semibold">
+                      {getInitials(userName)}
+                    </AvatarFallback>
+                  ) : (
+                    <AvatarImage src="/placeholder.svg" alt="User" />
+                  )}
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -168,13 +278,19 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href={`/${userType}/profile`} className="cursor-pointer flex w-full items-center">
+                <Link
+                  href={`/${userType}/profile`}
+                  className="cursor-pointer flex w-full items-center"
+                >
                   <User className="mr-2 h-4 w-4" />
                   <span>{t("profile")}</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/${userType}/settings`} className="cursor-pointer flex w-full items-center">
+                <Link
+                  href={`/${userType}/settings`}
+                  className="cursor-pointer flex w-full items-center"
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>{t("settings")}</span>
                 </Link>
@@ -187,7 +303,10 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
                 </div>
               </div>
               <DropdownMenuItem asChild>
-                <Link href="/login" className="cursor-pointer flex w-full items-center text-red-500 dark:text-red-400">
+                <Link
+                  href="/login"
+                  className="cursor-pointer flex w-full items-center text-red-500 dark:text-red-400"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>{t("logout")}</span>
                 </Link>
@@ -197,5 +316,5 @@ export default function DashboardHeader({ userType, userName, showSearch = true 
         </div>
       </div>
     </header>
-  )
+  );
 }

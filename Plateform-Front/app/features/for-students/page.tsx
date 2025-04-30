@@ -272,7 +272,7 @@ export default function ForStudentsPage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-secondary-turquoise hover:bg-secondary-turquoise/90 text-white dark:bg-teal-600 dark:hover:bg-teal-700"
+                className="bg-secondary-turquoise hover:bg-secondary-turquoise/90 text-white hover:text-white dark:bg-teal-600 dark:hover:bg-teal-700"
               >
                 <Link href="/login">{t("get_started")}</Link>
               </Button>
