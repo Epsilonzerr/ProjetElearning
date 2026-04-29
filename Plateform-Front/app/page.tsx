@@ -1,409 +1,348 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { GraduationCap, BookOpen, BarChart3, ArrowRight, CheckCircle } from "lucide-react"
-import { useLanguage } from "@/contexts/language-context"
 import { motion } from "framer-motion"
+import { ArrowRight, CheckCircle2, LineChart, ShieldCheck, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import SiteHeader from "@/components/site-header"
 import FooterWithLanguage from "@/components/footer-with-language"
-import {getUserData,getEvaluations,joinEvaluation} from "@/lib/apiConfig"
+import { useLanguage } from "@/contexts/language-context"
+
+const pageCopy = {
+  fr: {
+    eyebrow: "Evalyo for IGA",
+    headline: "L'evaluation academique devient enfin lisible, fluide et credible.",
+    intro:
+      "Une experience React pensee pour les etudiants et les professeurs, avec une interface plus claire, un parcours plus direct et une lecture immediate des evaluations.",
+    primaryCta: "Acceder a la plateforme",
+    secondaryCta: "Explorer l'espace professeur",
+    campusNote: "Campus connecte, sessions cadrées, suivi en temps reel",
+    stat1: "Sessions actives",
+    stat2: "Parcours etudiants",
+    stat3: "Rendus traces",
+    supportTitle: "Une base plus serieuse pour les usages quotidiens",
+    supportIntro:
+      "Le front prend une direction plus operationnelle: moins de bruit, plus de repères, plus de confiance dans les actions.",
+    supportA: "Connexion plus directe",
+    supportADesc: "Le parcours d'entree devient plus net, avec des actions visibles des le premier ecran.",
+    supportB: "Vision claire des evaluations",
+    supportBDesc: "Les etats actifs, les rythmes de session et les points d'attention remontent mieux.",
+    supportC: "Un langage visuel plus mature",
+    supportCDesc: "Typographie, contrastes et structure donnent une interface moins scolaire et plus produit.",
+    detailTitle: "Concue pour piloter, pas seulement pour montrer",
+    detailIntro:
+      "L'interface d'accueil sert maintenant d'orientation produit: qui entre, pourquoi, et quelle action lancer en premier.",
+    detail1: "Une hero section plein cadre avec vrai ancrage visuel",
+    detail2: "Des bandes de contenu sans mosaique de cartes generiques",
+    detail3: "Des animations courtes qui installent la hierarchie sans distraire",
+    flowTitle: "Parcours mis en avant",
+    flow1Label: "Etudiant",
+    flow1Text: "Rejoindre une evaluation, comprendre son statut et avancer sans friction.",
+    flow2Label: "Professeur",
+    flow2Text: "Creer, suivre et lire les resultats depuis une interface plus calme.",
+    flow3Label: "Plateforme",
+    flow3Text: "Poser une base visuelle assez solide pour brancher ensuite les flux reels.",
+    finalTitle: "Un front React plus propre, pret pour le vrai branchement.",
+    finalText:
+      "La suite logique est de connecter cette experience au backend pour que la promesse visuelle s'aligne avec les parcours reels.",
+    finalPrimary: "Continuer vers la connexion",
+    finalSecondary: "Voir le dashboard etudiant",
+  },
+  en: {
+    eyebrow: "Evalyo for IGA",
+    headline: "Academic assessment finally feels clear, fast, and trustworthy.",
+    intro:
+      "A React experience designed for students and professors, with cleaner navigation, sharper hierarchy, and faster understanding of assessments.",
+    primaryCta: "Access the platform",
+    secondaryCta: "Explore professor space",
+    campusNote: "Connected campus, framed sessions, live progress tracking",
+    stat1: "Active sessions",
+    stat2: "Student journeys",
+    stat3: "Tracked submissions",
+    supportTitle: "A stronger foundation for daily use",
+    supportIntro:
+      "The frontend now moves toward a more operational direction: less noise, clearer orientation, and more confidence in each action.",
+    supportA: "Cleaner sign-in entry",
+    supportADesc: "The entry flow becomes sharper, with obvious actions from the first screen.",
+    supportB: "Better assessment visibility",
+    supportBDesc: "Active states, session tempo, and attention points surface more clearly.",
+    supportC: "A more mature visual language",
+    supportCDesc: "Typography, contrast, and structure make the product feel less academic-demo and more real.",
+    detailTitle: "Built to guide action, not just decorate",
+    detailIntro:
+      "The home experience now works as product orientation: who enters, why they enter, and what to do first.",
+    detail1: "A full-bleed hero with a real visual anchor",
+    detail2: "Content bands instead of generic dashboard-card mosaics",
+    detail3: "Short motion sequences that create hierarchy without noise",
+    flowTitle: "Highlighted journeys",
+    flow1Label: "Student",
+    flow1Text: "Join an assessment, understand its status, and move forward without friction.",
+    flow2Label: "Professor",
+    flow2Text: "Create, supervise, and read outcomes through a calmer interface.",
+    flow3Label: "Platform",
+    flow3Text: "Set a strong visual base before connecting the real product flows.",
+    finalTitle: "A cleaner React frontend, ready for real integration.",
+    finalText:
+      "The natural next step is connecting this experience to the backend so the visual promise matches real workflows.",
+    finalPrimary: "Continue to sign in",
+    finalSecondary: "Open student dashboard",
+  },
+}
+
 export default function Home() {
-  const { t } = useLanguage()
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const { language } = useLanguage()
+  const copy = pageCopy[language] ?? pageCopy.en
 
-  useEffect(() => {
-    setIsLoaded(true)
-    setMounted(true)
-  }, [])
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  }
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
+  const fadeUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-  }
-
-  const statsData = [
-    { value: "10,000+", label: t("students") },
-    { value: "500+", label: t("professors") },
-    { value: "1,000+", label: t("assessments") },
-    { value: "95%", label: t("satisfaction") },
-  ]
-
-  const testimonials = [
-    {
-      quote: t("testimonial_1"),
-      author: "Mme. Hassna Akhasbi",
-      role: t("professor_computer_science"),
-    },
-    {
-      quote: t("testimonial_2"),
-      author: "Fatima Zahra",
-      role: t("student_engineering"),
-    },
-    {
-      quote: t("testimonial_3"),
-      author: "Mr. EL ABID AMRANI Noureddine",
-      role: t("department_head"),
-    },
-  ]
-
-  if (!mounted) {
-    return null
+      transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
+    }),
   }
 
   return (
-    <div className="min-h-screen flex flex-col dark:bg-gray-900">
+    <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
       <SiteHeader />
 
-      {/* Hero Section */}
-      <div className="iga-gradient text-white relative overflow-hidden dark:bg-gray-800">
-        <motion.div
-          className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] bg-repeat opacity-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 1 }}
-        ></motion.div>
+      <main>
+        <section className="hero-shell relative min-h-[calc(100svh-5rem)] overflow-hidden">
+          <div className="hero-media absolute inset-0">
+            <img
+              src="/images/campus-students.jpg"
+              alt="Students using the learning platform on campus"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="hero-overlay absolute inset-0" />
+          <div className="hero-grid absolute inset-0 opacity-40" />
 
-        <div className="container mx-auto px-4 py-16 md:py-28 relative z-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <motion.div
-              className="md:w-1/2 space-y-6"
-              initial="hidden"
-              animate={isLoaded ? "visible" : "hidden"}
-              variants={fadeIn}
-            >
-              <motion.h1
-                className="text-4xl md:text-6xl font-bold leading-tight text-white dark:text-white"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.3 }}
-              >
-                {t("assessment_platform")}
-              </motion.h1>
+          <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] w-full max-w-[1400px] items-end px-5 pb-10 pt-20 sm:px-8 lg:px-12 lg:pb-14">
+            <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.65fr)] lg:items-end">
+              <div className="max-w-3xl">
+                <motion.p
+                  className="mb-6 inline-flex items-center gap-2 border border-white/20 bg-white/[0.08] px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-white/[0.88] backdrop-blur-md"
+                  initial="hidden"
+                  animate="visible"
+                  custom={0.1}
+                  variants={fadeUp}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {copy.eyebrow}
+                </motion.p>
 
-              <motion.p
-                className="text-lg md:text-xl opacity-90 text-white dark:text-gray-200"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.5 }}
-              >
-                {t("platform_description")}
-              </motion.p>
+                <motion.h1
+                  className="max-w-4xl text-5xl leading-[0.95] text-white sm:text-6xl lg:text-8xl"
+                  initial="hidden"
+                  animate="visible"
+                  custom={0.2}
+                  variants={fadeUp}
+                >
+                  {copy.headline}
+                </motion.h1>
+
+                <motion.p
+                  className="mt-6 max-w-2xl text-base leading-7 text-white/[0.78] sm:text-lg"
+                  initial="hidden"
+                  animate="visible"
+                  custom={0.35}
+                  variants={fadeUp}
+                >
+                  {copy.intro}
+                </motion.p>
+
+                <motion.div
+                  className="mt-8 flex flex-col gap-4 sm:flex-row"
+                  initial="hidden"
+                  animate="visible"
+                  custom={0.5}
+                  variants={fadeUp}
+                >
+                  <Button
+                    asChild
+                    size="lg"
+                    className="rounded-none border border-[hsl(var(--accent-strong))] bg-[hsl(var(--accent-strong))] px-7 text-[0.95rem] font-semibold text-[hsl(var(--ink-deep))] hover:bg-[hsl(var(--accent-soft))]"
+                  >
+                    <Link href="/login">{copy.primaryCta}</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="rounded-none border-white/35 bg-white/[0.06] px-7 text-[0.95rem] font-semibold text-white backdrop-blur-sm hover:bg-white/[0.12]"
+                  >
+                    <Link href="/professor/dashboard">
+                      {copy.secondaryCta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </motion.div>
+              </div>
 
               <motion.div
-                className="flex flex-col sm:flex-row gap-4 pt-4"
-                initial={{ opacity: 0, y: 20 }}
+                className="hero-aside ml-auto w-full max-w-md"
+                initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.7 }}
+                transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Button
-                  asChild
-                  size="lg"
-                  // className="bg-white text-primary-blue hover:bg-gray-100 shadow-lg hover:text-primary-blue shadow-lg"
-                   className="border border-gray-300 bg-white text-primary-blue hover:bg-gray-100 shadow-lg hover:text-primary-blue dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <Link href="/login">{t("login")}</Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent border-white text-white hover:bg-white/10 dark:border-white dark:text-white dark:hover:bg-white/10"
-                >
-                  <Link href="/about">{t("learn_more")}</Link>
-                </Button>
+                <p className="text-sm uppercase tracking-[0.22em] text-white/70">{copy.campusNote}</p>
+                <div className="mt-4 space-y-4 border-l border-white/[0.18] pl-5">
+                  <div className="grid grid-cols-3 gap-3 text-white">
+                    <div>
+                      <div className="text-2xl font-semibold">24</div>
+                      <div className="mt-1 text-xs uppercase tracking-[0.18em] text-white/60">{copy.stat1}</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-semibold">1.2k</div>
+                      <div className="mt-1 text-xs uppercase tracking-[0.18em] text-white/60">{copy.stat2}</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-semibold">98%</div>
+                      <div className="mt-1 text-xs uppercase tracking-[0.18em] text-white/60">{copy.stat3}</div>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-[hsl(var(--line-soft))] bg-[hsl(var(--paper-muted))]">
+          <div className="mx-auto max-w-[1320px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.4fr]">
+              <div>
+                <p className="section-kicker">Product baseline</p>
+                <h2 className="mt-4 max-w-xl text-3xl leading-tight text-[hsl(var(--ink-deep))] sm:text-4xl">
+                  {copy.supportTitle}
+                </h2>
+                <p className="mt-5 max-w-lg text-base leading-7 text-[hsl(var(--ink-muted))]">
+                  {copy.supportIntro}
+                </p>
+              </div>
+
+              <div className="grid gap-0 border-y border-[hsl(var(--line-soft))] lg:grid-cols-3 lg:border-x">
+                {[
+                  [copy.supportA, copy.supportADesc],
+                  [copy.supportB, copy.supportBDesc],
+                  [copy.supportC, copy.supportCDesc],
+                ].map(([title, text], index) => (
+                  <motion.div
+                    key={title}
+                    className="border-b border-[hsl(var(--line-soft))] px-0 py-6 lg:border-b-0 lg:border-r lg:px-8 lg:py-0 last:border-r-0"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.55, delay: index * 0.12 }}
+                  >
+                    <div className="flex h-full flex-col justify-between gap-8 py-2">
+                      <div className="text-sm uppercase tracking-[0.22em] text-[hsl(var(--ink-faint))]">
+                        0{index + 1}
+                      </div>
+                      <div>
+                        <h3 className="text-xl text-[hsl(var(--ink-deep))]">{title}</h3>
+                        <p className="mt-4 text-sm leading-7 text-[hsl(var(--ink-muted))]">{text}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[hsl(var(--background))]">
+          <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-12 lg:py-24">
+            <motion.div
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75 }}
+            >
+              <p className="section-kicker">Experience direction</p>
+              <h2 className="mt-4 max-w-2xl text-3xl leading-tight text-[hsl(var(--ink-deep))] sm:text-5xl">
+                {copy.detailTitle}
+              </h2>
+              <p className="mt-5 max-w-xl text-base leading-7 text-[hsl(var(--ink-muted))]">{copy.detailIntro}</p>
+
+              <div className="mt-10 space-y-5">
+                {[copy.detail1, copy.detail2, copy.detail3].map((item) => (
+                  <div key={item} className="flex items-start gap-4 border-b border-[hsl(var(--line-soft))] pb-5">
+                    <CheckCircle2 className="mt-1 h-5 w-5 text-[hsl(var(--accent-strong))]" />
+                    <p className="text-base leading-7 text-[hsl(var(--ink-deep))]">{item}</p>
+                  </div>
+                ))}
+              </div>
             </motion.div>
 
             <motion.div
-              className="md:w-1/2 flex justify-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.5 }}
+              className="relative overflow-hidden border border-[hsl(var(--line-soft))] bg-[hsl(var(--paper-muted))]"
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75, delay: 0.1 }}
             >
-              <div className="relative w-full max-w-md">
-                <motion.div
-                  className="absolute inset-0 bg-white/10 rounded-2xl transform rotate-3"
-                  animate={{ rotate: 3 }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-                ></motion.div>
-                <motion.div
-                  className="absolute inset-0 bg-white/20 rounded-2xl transform -rotate-3"
-                  animate={{ rotate: -3 }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-                ></motion.div>
-                <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-                  <img src="/images/image.png" alt="IGA Assessment Platform" className="w-full h-auto" />
+              <img
+                src="/images/image.png"
+                alt="Evalyo platform overview"
+                className="h-full min-h-[420px] w-full object-cover"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(6,17,34,0.92))] p-6 text-white sm:p-8">
+                <div className="flex items-center gap-3 text-sm uppercase tracking-[0.24em] text-white/[0.66]">
+                  <LineChart className="h-4 w-4" />
+                  {copy.flowTitle}
+                </div>
+                <div className="mt-6 space-y-5">
+                  {[
+                    [copy.flow1Label, copy.flow1Text],
+                    [copy.flow2Label, copy.flow2Text],
+                    [copy.flow3Label, copy.flow3Text],
+                  ].map(([label, text]) => (
+                    <div key={label} className="border-t border-white/[0.14] pt-4 first:border-t-0 first:pt-0">
+                      <div className="text-xs uppercase tracking-[0.22em] text-white/[0.56]">{label}</div>
+                      <p className="mt-2 text-sm leading-7 text-white/[0.78]">{text}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
           </div>
-        </div>
+        </section>
 
-        {/* Wave Divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto">
-            <path
-              fill="currentColor"
-              fillOpacity="1"
-              d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
-              className="text-white dark:text-gray-900"
-            ></path>
-          </svg>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <motion.div
-        className="py-16 bg-white dark:bg-gray-900"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {/* {statsData.map((stat, index) => (
-              <motion.div key={index} variants={cardVariants} className="p-6">
-                <motion.p
-                  className="text-4xl font-bold text-primary-blue dark:text-primary-blue"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  {stat.value}
-                </motion.p>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">{stat.label}</p>
-              </motion.div>
-            ))} */}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Features Section */}
-      <motion.div
-        className="py-16 bg-gray-50 dark:bg-gray-800"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        <div className="container mx-auto px-4">
-          <motion.h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white" variants={fadeIn}>
-            {t("main_features")}
-          </motion.h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <motion.div variants={cardVariants}>
-              <Card className="iga-shadow hover:shadow-lg transition-shadow h-full dark:bg-gray-800 dark:border-gray-700">
-                <CardContent className="pt-6 p-6 h-full flex flex-col">
-                  <div className="rounded-full bg-primary-blue/10 dark:bg-primary-blue/20 w-12 h-12 flex items-center justify-center mb-4">
-                    <GraduationCap className="text-primary-blue h-6 w-6" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{t("for_teachers")}</h3>
-                  <p className="text-muted-foreground dark:text-gray-400 flex-grow">{t("teachers_description")}</p>
-                  <Button variant="link" className="p-0 h-auto mt-4 flex items-center text-primary-blue" asChild>
-                    <Link href="/features/for-teachers">
-                      {t("learn_more")} <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={cardVariants}>
-              <Card className="iga-shadow hover:shadow-lg transition-shadow h-full dark:bg-gray-800 dark:border-gray-700">
-                <CardContent className="pt-6 p-6 h-full flex flex-col">
-                  <div className="rounded-full bg-secondary-turquoise/10 dark:bg-secondary-turquoise/20 w-12 h-12 flex items-center justify-center mb-4">
-                    <BookOpen className="text-secondary-turquoise h-6 w-6" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{t("for_students")}</h3>
-                  <p className="text-muted-foreground dark:text-gray-400 flex-grow">{t("students_description")}</p>
-                  <Button variant="link" className="p-0 h-auto mt-4 flex items-center text-secondary-turquoise" asChild>
-                    <Link href="/features/for-students">
-                      {t("learn_more")} <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={cardVariants}>
-              <Card className="iga-shadow hover:shadow-lg transition-shadow h-full dark:bg-gray-800 dark:border-gray-700">
-                <CardContent className="pt-6 p-6 h-full flex flex-col">
-                  <div className="rounded-full bg-primary-blue/10 dark:bg-primary-blue/20 w-12 h-12 flex items-center justify-center mb-4">
-                    <BarChart3 className="text-primary-blue h-6 w-6" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{t("smart_analysis")}</h3>
-                  <p className="text-muted-foreground dark:text-gray-400 flex-grow">{t("analysis_description")}</p>
-                  <Button variant="link" className="p-0 h-auto mt-4 flex items-center text-primary-blue" asChild>
-                    <Link href="/features/smart-analysis">
-                      {t("learn_more")} <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Testimonials Section */}
-      <motion.div
-        className="py-16 bg-white"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        <div className="container mx-auto px-4">
-          <motion.h2 className="text-3xl font-bold text-center mb-12" variants={fadeIn}>
-            {t("what_people_say")}
-          </motion.h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* {testimonials.map((testimonial, index) => (
-              <motion.div key={index} variants={cardVariants} className="bg-gray-50 p-6 rounded-lg border relative">
-                <div className="absolute -top-4 left-6 text-5xl text-primary-blue opacity-20">"</div>
-                <p className="text-gray-700 mb-6 relative z-10">{testimonial.quote}</p>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-primary-blue/20 flex items-center justify-center text-primary-blue font-bold">
-                    {testimonial.author.charAt(0)}
-                  </div>
-                  <div className="ml-3">
-                    <p className="font-semibold">{testimonial.author}</p>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))} */}
-            {testimonials.map((testimonial, index) => (
-              <motion.div 
-                key={index} 
-                variants={cardVariants} 
-                className="bg-gray-50 p-6 rounded-lg border flex flex-col justify-between h-full relative"
-              >
-                <div className="absolute -top-4 left-6 text-5xl text-primary-blue opacity-20">"</div>
-                
-                {/* This div will grow and push the author to the bottom */}
-                <div className="mb-6 relative z-10">
-                  <p className="text-gray-700">{testimonial.quote}</p>
-                </div>
-
-                {/* Author info stays at the bottom */}
-                <div className="flex items-center mt-auto">
-                  <div className="w-10 h-10 rounded-full bg-primary-blue/20 flex items-center justify-center text-primary-blue font-bold">
-                    {testimonial.author.charAt(0)}
-                  </div>
-                  <div className="ml-3">
-                    <p className="font-semibold">{testimonial.author}</p>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Why Choose Us Section */}
-      <motion.div
-        className="py-16 bg-gray-50"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <motion.div className="md:w-1/2" variants={fadeIn}>
-              <h2 className="text-3xl font-bold mb-6">{t("why_choose_us")}</h2>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">{t("innovative_platform")}</h3>
-                    <p className="text-muted-foreground">{t("innovative_platform_desc")}</p>
-                  </div>
-                </div>
-                {/* <div className="flex items-start gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">{t("expert_educators")}</h3>
-                    <p className="text-muted-foreground">{t("expert_educators_desc")}</p>
-                  </div>
-                </div> */}
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">{t("continuous_improvement")}</h3>
-                    <p className="text-muted-foreground">{t("continuous_improvement_desc")}</p>
-                  </div>
-                </div>
-                {/* <div className="flex items-start gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold">{t("community_support")}</h3>
-                    <p className="text-muted-foreground">{t("community_support_desc")}</p>
-                  </div>
-                </div> */}
+        <section className="border-t border-[hsl(var(--line-soft))] bg-[hsl(var(--ink-deep))] text-white">
+          <div className="mx-auto max-w-[1320px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+            <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+              <div>
+                <p className="section-kicker text-[hsl(var(--accent-strong))]">React frontend</p>
+                <h2 className="mt-4 max-w-3xl text-3xl leading-tight text-white sm:text-5xl">{copy.finalTitle}</h2>
               </div>
-            </motion.div>
-
-            <motion.div className="md:w-1/2" variants={fadeIn}>
-              <div className="relative">
-                <div className="absolute -inset-4 rounded-xl bg-gradient-to-r from-primary-blue to-secondary-turquoise opacity-20 blur-lg"></div>
-                <div className="relative bg-white rounded-xl shadow-xl overflow-hidden">
-                  <img src="/images/campus-students.jpg" alt="IGA Campus Students" className="w-full h-auto" />
+              <div>
+                <p className="max-w-xl text-base leading-7 text-white/[0.72]">{copy.finalText}</p>
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="rounded-none border border-[hsl(var(--accent-strong))] bg-[hsl(var(--accent-strong))] px-7 text-[0.95rem] font-semibold text-[hsl(var(--ink-deep))] hover:bg-[hsl(var(--accent-soft))]"
+                  >
+                    <Link href="/login">
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      {copy.finalPrimary}
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="rounded-none border-white/25 bg-transparent px-7 text-[0.95rem] font-semibold text-white hover:bg-white/[0.08]"
+                  >
+                    <Link href="/student/dashboard">{copy.finalSecondary}</Link>
+                  </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
-        </div>
-      </motion.div>
-
-      {/* CTA Section */}
-      <motion.div
-        className="py-16 bg-primary-blue text-white"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeIn}
-      >
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">{t("ready_to_start")}</h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">{t("ready_to_start_desc")}</p>
-          <Button asChild size="lg" className="bg-white text-primary-blue dark:text-white hover:bg-gray-100 hover:text-primary-blue shadow-lg">
-            <Link href="/login">{t("get_started_now")}</Link>
-          </Button>
-        </div>
-      </motion.div>
+        </section>
+      </main>
 
       <FooterWithLanguage />
     </div>

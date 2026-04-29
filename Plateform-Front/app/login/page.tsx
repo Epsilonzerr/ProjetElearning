@@ -16,6 +16,8 @@ import FooterWithLanguage from "@/components/footer-with-language"
 import { useLanguage } from "@/contexts/language-context"
 import LanguageSwitcher from "@/components/language-switcher"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { loginUser, getUserData } from "@/lib/apiConfig"
+import { saveSession } from "@/lib/auth"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -25,11 +27,12 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [userType, setUserType] = useState("student")
   const [mounted, setMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
@@ -46,10 +49,36 @@ export default function LoginPage() {
       return
     }
 
-    if (userType === "professor") {
-      router.push("/professor/dashboard")
-    } else {
-      router.push("/student/dashboard")
+    setIsLoading(true)
+
+    try {
+      const authData = await loginUser(email, password)
+      const expectedRole = userType === "professor" ? "professeur" : "etudiant"
+
+      if (authData.role !== expectedRole) {
+        setError(
+          language === "fr"
+            ? "Ce compte ne correspond pas au profil choisi."
+            : "This account does not match the selected profile.",
+        )
+        setIsLoading(false)
+        return
+      }
+
+      const profile = await getUserData(authData.user_id, authData.access_token)
+
+      saveSession({
+        accessToken: authData.access_token,
+        refreshToken: authData.refresh_token,
+        userId: authData.user_id,
+        role: authData.role,
+        profile,
+      })
+
+      router.push(authData.role === "professeur" ? "/professor/dashboard" : "/student/dashboard")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("login"))
+      setIsLoading(false)
     }
   }
 
@@ -117,6 +146,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                     className="bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   />
                 </div>
@@ -139,15 +169,17 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isLoading}
                     className="bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
 
                 <Button
                   type="submit"
+                  disabled={isLoading}
                   className="w-full bg-primary-blue hover:bg-primary-blue/90 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
                 >
-                  {t("login")}
+                  {isLoading ? (language === "fr" ? "Connexion..." : "Signing in...") : t("login")}
                 </Button>
               </form>
             </CardContent>

@@ -11,23 +11,23 @@ export default function SiteHeader() {
   const { t } = useLanguage();
 
   return (
-    <header className="w-full border-b bg-white dark:bg-gray-900 dark:border-gray-800 sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-          <AnimatedLogo />
+    <header className="sticky top-0 z-50 w-full border-b border-white/12 bg-[hsl(var(--ink-deep)/0.82)] backdrop-blur-xl">
+      <div className="mx-auto flex h-20 w-full max-w-[1400px] items-center justify-between px-5 sm:px-8 lg:px-12">
+        <AnimatedLogo />
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button
             asChild
-            className="bg-[#4052a8] hover:bg-[#4052a8]/90 hover:text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+            variant="ghost"
+            className="hidden rounded-none border border-white/10 bg-transparent px-5 text-white hover:bg-white/[0.06] hover:text-white md:inline-flex"
           >
-            <Link href="/login">{t("login")}</Link>
+            <Link href="/">{t("home")}</Link>
           </Button>
           <Button
             asChild
-            variant="outline"
-            className="dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            className="rounded-none border border-[hsl(var(--accent-strong))] bg-[hsl(var(--accent-strong))] px-5 font-semibold text-[hsl(var(--ink-deep))] hover:bg-[hsl(var(--accent-soft))] hover:text-[hsl(var(--ink-deep))]"
           >
-            <Link href="/">{t("home")}</Link>
+            <Link href="/login">{t("login")}</Link>
           </Button>
           <LanguageSwitcher />
           <ThemeToggle />

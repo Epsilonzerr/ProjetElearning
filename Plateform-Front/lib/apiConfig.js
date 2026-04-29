@@ -1,39 +1,66 @@
-const API_BASE_URL = 'http://localhost:8000'; 
-export const getUserData = async (userId, token) => {
-    const response = await fetch(`http://localhost:8000/users/data/${userId}/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    })
-    
-    if (!response.ok) throw new Error("Failed to load user data")
-    return response.json()
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+
+async function parseJson(response) {
+  const text = await response.text()
+  return text ? JSON.parse(text) : {}
+}
+
+async function request(path, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  })
+
+  const data = await parseJson(response)
+
+  if (!response.ok) {
+    throw new Error(data.detail || data.error || "Request failed")
   }
-  
-  export const getEvaluations = async (userId, token) => {
-    const response = await fetch(`http://localhost:8000/courses/evaluations/${userId}/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    })
-    
-    if (!response.ok) throw new Error("Failed to load evaluations")
-    return response.json()
-  }
-  
-  export const joinEvaluation = async (userId, token, code) => {
-    const response = await fetch(`http://localhost:8000/courses/evaluations/join-assessment/`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId, code })
-    })
-    
-    if (!response.ok) throw new Error("Failed to join assessment")
-    return response.json()
-  }
+
+  return data
+}
+
+export async function loginUser(email, password) {
+  return request("/users/login/", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  })
+}
+
+export async function getUserData(userId, token) {
+  return request(`/users/data/${userId}/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export async function getEvaluations(userId, token) {
+  return request(`/courses/evaluations/${userId}/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export async function getProfessorEvaluations(userId, token) {
+  return request(`/courses/professor/evaluations/${userId}/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export async function joinEvaluation(userId, token, code) {
+  return request("/courses/evaluations/join-assessment/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ userId, code }),
+  })
+}
   

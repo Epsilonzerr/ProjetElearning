@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,6 +30,7 @@ import { useLanguage } from "@/contexts/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import LanguageSwitcher from "@/components/language-switcher";
 import StaticLogo from "./ui/StaticLogo";
+import { clearSession } from "@/lib/auth";
 
 interface DashboardHeaderProps {
   userType: "student" | "professor" | "admin";
@@ -43,6 +44,7 @@ export default function DashboardHeader({
   showSearch = false,
 }: DashboardHeaderProps) {
   const { t } = useLanguage();
+  const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -88,8 +90,6 @@ export default function DashboardHeader({
     { name: t("recommendations"), href: "/student/recommendations" },
   ];
 
-  console.log("User Name:", userName);
-
   const professorNavItems = [
     {
       name: t("dashboard"),
@@ -110,6 +110,11 @@ export default function DashboardHeader({
 
   const navItems = userType === "student" ? studentNavItems : professorNavItems;
   const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const handleLogout = () => {
+    clearSession();
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white dark:bg-gray-900 dark:border-gray-800">
@@ -302,14 +307,12 @@ export default function DashboardHeader({
                   <ThemeToggle />
                 </div>
               </div>
-              <DropdownMenuItem asChild>
-                <Link
-                  href="/login"
-                  className="cursor-pointer flex w-full items-center text-red-500 dark:text-red-400"
-                >
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="cursor-pointer flex w-full items-center text-red-500 dark:text-red-400"
+              >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>{t("logout")}</span>
-                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
