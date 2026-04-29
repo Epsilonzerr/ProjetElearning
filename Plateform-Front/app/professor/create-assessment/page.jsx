@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useLanguage } from "@/contexts/language-context"
 import { downloadAssessmentData } from "@/utils/download-utils"
 import { clearSession, getSession } from "@/lib/auth"
+import { createProfessorEvaluation } from "@/lib/apiConfig"
 
 // Mock assessment data for editing
 const mockAssessments = [
@@ -129,6 +130,7 @@ export default function CreateAssessment() {
   const [isLoading, setIsLoading] = useState(isEditing)
   const [userName, setUserName] = useState("Professor")
   const [saveMessage, setSaveMessage] = useState("")
+  const [submitError, setSubmitError] = useState("")
 
   useEffect(() => {
     const session = getSession()
@@ -219,7 +221,8 @@ export default function CreateAssessment() {
     )
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setSubmitError("")
     const draft = {
       title,
       description,
@@ -235,8 +238,42 @@ export default function CreateAssessment() {
     }
 
     window.localStorage.setItem("evalyo_professor_draft_assessment", JSON.stringify(draft))
-    setSaveMessage(isEditing ? t("assessment_updated_success") : t("assessment_created_success"))
-    router.push("/professor/evaluations")
+
+    if (isEditing) {
+      setSaveMessage(t("assessment_updated_success"))
+      router.push("/professor/evaluations")
+      return
+    }
+
+    const session = getSession()
+    if (!session?.accessToken) {
+      clearSession()
+      router.replace("/login")
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      await createProfessorEvaluation(session.accessToken, {
+        title,
+        description,
+        duration: assessmentType === "entrainement" ? 0 : timeLimit,
+        status: deadlineDate ? "active" : "pending",
+        questions: questions.map((question) => ({
+          type: question.type,
+          text: question.text,
+          points: question.points,
+          options: question.options || [],
+          answer: question.answer || "",
+        })),
+      })
+      window.localStorage.removeItem("evalyo_professor_draft_assessment")
+      setSaveMessage(t("assessment_created_success"))
+      router.push("/professor/evaluations")
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : t("error"))
+      setIsLoading(false)
+    }
   }
 
   const handleDownload = () => {
@@ -280,7 +317,7 @@ export default function CreateAssessment() {
               <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
                 {showPreview ? t("edit") : t("preview")}
               </Button>
-              <Button onClick={handleSave}>
+              <Button onClick={handleSave} disabled={isLoading}>
                 <Save className="mr-2 h-4 w-4" /> {t("save")}
               </Button>
             </div>
@@ -291,6 +328,14 @@ export default function CreateAssessment() {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{t("save")}</AlertTitle>
               <AlertDescription>{saveMessage}</AlertDescription>
+            </Alert>
+          )}
+
+          {submitError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>{t("error")}</AlertTitle>
+              <AlertDescription>{submitError}</AlertDescription>
             </Alert>
           )}
 
@@ -690,10 +735,10 @@ export default function CreateAssessment() {
                     </Tabs>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={() => router.push("/professor/assessments")}>
+                    <Button variant="outline" onClick={() => router.push("/professor/evaluations")}>
                       {t("cancel")}
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} disabled={isLoading}>
                       <Save className="mr-2 h-4 w-4" /> {t("save")}
                     </Button>
                   </CardFooter>

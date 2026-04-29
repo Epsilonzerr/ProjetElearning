@@ -86,3 +86,34 @@ class CourseApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()["items"]), 1)
         self.assertEqual(response.json()["items"][0]["code"], self.evaluation.access_code)
+
+    def test_professor_can_create_evaluation_with_questions(self):
+        self.authenticate(self.professor_user.username)
+
+        response = self.client.post(
+            "/courses/professor/evaluations/",
+            {
+                "title": "New assessment",
+                "description": "Created from API",
+                "duration": 75,
+                "status": "pending",
+                "questions": [
+                    {
+                        "type": "multiple-choice",
+                        "text": "What is Java?",
+                        "points": 2,
+                        "options": ["A language", "A database"],
+                    },
+                    {
+                        "type": "short-answer",
+                        "text": "Define OOP",
+                        "points": 3,
+                        "answer": "Object oriented programming",
+                    },
+                ],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Evaluation.objects.filter(title="New assessment").exists())

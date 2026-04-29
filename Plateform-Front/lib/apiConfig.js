@@ -54,6 +54,16 @@ export async function getProfessorEvaluations(userId, token) {
   })
 }
 
+export async function createProfessorEvaluation(token, payload) {
+  return request("/courses/professor/evaluations/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+}
+
 export async function joinEvaluation(userId, token, code) {
   return request("/courses/evaluations/join-assessment/", {
     method: "POST",
