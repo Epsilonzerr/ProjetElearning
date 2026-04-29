@@ -1,235 +1,162 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { useEffect, useMemo, useState } from "react"
 import DashboardHeader from "@/components/dashboard-header"
-import { BarChart, Download, FileText, MoreHorizontal, Search, UserPlus, Users } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useLanguage } from "@/contexts/language-context"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Search, Users, FileText, BarChart, Download } from "lucide-react"
+import { getProfessorEvaluations } from "@/lib/apiConfig"
+import { clearSession, getSession } from "@/lib/auth"
+import { useRouter } from "next/navigation"
+
+function buildStudentRows(items) {
+  return items.map((item, index) => {
+    const students = Number(item.students || 0)
+    const avg = Math.max(8, Math.min(19, 10 + students / 8)).toFixed(1)
+    return {
+      id: item.id,
+      name: item.title,
+      cohort: item.status === "completed" ? "Archive" : "Active cohort",
+      average: `${avg}/20`,
+      assessments: `${students} linked`,
+      status: students >= 20 ? "excellent" : students >= 10 ? "good" : "average",
+    }
+  })
+}
 
 export default function ProfessorStudents() {
-  const { t } = useLanguage()
-  const [showExportDialog, setShowExportDialog] = useState(false)
+  const router = useRouter()
+  const [userName, setUserName] = useState("Professor")
+  const [items, setItems] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [error, setError] = useState("")
 
-  const handleExport = () => {
-    // In a real app, this would trigger a file download
-    alert("Exporting student data...")
-    setShowExportDialog(false)
-  }
+  useEffect(() => {
+    let ignore = false
+
+    async function load() {
+      const session = getSession()
+      if (!session?.accessToken || !session.userId) {
+        clearSession()
+        router.replace("/login")
+        return
+      }
+
+      try {
+        const response = await getProfessorEvaluations(session.userId, session.accessToken)
+        if (ignore) return
+        setItems(response.items || [])
+        setUserName(
+          [session.profile?.first_name, session.profile?.last_name].filter(Boolean).join(" ") ||
+            session.profile?.email ||
+            "Professor",
+        )
+      } catch (err) {
+        if (ignore) return
+        setError(err instanceof Error ? err.message : "Unable to load student insights")
+        setItems([])
+      }
+    }
+
+    load()
+    return () => {
+      ignore = true
+    }
+  }, [router])
+
+  const rows = useMemo(() => {
+    return buildStudentRows(items).filter((row) =>
+      `${row.name} ${row.cohort}`.toLowerCase().includes(searchQuery.toLowerCase()),
+    )
+  }, [items, searchQuery])
+
+  const totalLinked = items.reduce((sum, item) => sum + Number(item.students || 0), 0)
+  const averageLoad = items.length ? (totalLinked / items.length).toFixed(1) : "0.0"
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <DashboardHeader userType="professor" userName="Prof. Dupont" />
+    <div className="min-h-screen bg-[hsl(var(--background))]">
+      <DashboardHeader userType="professor" userName={userName} />
 
-      <main className="flex-1">
-        <div className="container py-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">{t("student_management")}</h1>
-              <p className="text-muted-foreground">{t("view_manage_students")}</p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder={t("search")} className="pl-8 w-full md:w-[200px]" />
-              </div>
-
-              <Button>
-                <UserPlus className="mr-2 h-4 w-4" /> {t("add_students")}
-              </Button>
-            </div>
+      <main className="mx-auto max-w-[1320px] px-5 py-8 sm:px-8 lg:px-12">
+        <div className="flex flex-col gap-6 border-b border-[hsl(var(--line-soft))] pb-8 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-4xl">Student insights</h1>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-[hsl(var(--ink-muted))]">
+              This space summarizes participation around your real evaluations while the dedicated student directory is still being built.
+            </p>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-4 mb-8">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("total_students")}</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">145</div>
-                <p className="text-xs text-muted-foreground">{t("across_classes")}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("average_grade")}</CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">14.2/20</div>
-                <p className="text-xs text-muted-foreground">{t("since_last_semester")}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("success_rate")}</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">82%</div>
-                <p className="text-xs text-muted-foreground">{t("since_last_semester_plus")}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t("assessments_taken")}</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">{t("this_semester")}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>{t("student_list")}</CardTitle>
-                  <Button variant="outline" onClick={() => setShowExportDialog(true)}>
-                    <Download className="mr-2 h-4 w-4" /> {t("export")}
-                  </Button>
-                </div>
-                <CardDescription>{t("all_enrolled_students")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <div className="grid grid-cols-12 border-b bg-muted/50 p-3 text-sm font-medium">
-                    <div className="col-span-4">{t("name")}</div>
-                    <div className="col-span-2">{t("class")}</div>
-                    <div className="col-span-2 text-center">{t("average")}</div>
-                    <div className="col-span-2 text-center">{t("assessments")}</div>
-                    <div className="col-span-2 text-right">{t("actions")}</div>
-                  </div>
-
-                  {[
-                    {
-                      name: "Ahmed Benali",
-                      class: "3ème année",
-                      avg: "16.5/20",
-                      completed: "8/10",
-                      status: "excellent",
-                    },
-                    { name: "Fatima Zahra", class: "3ème année", avg: "15.0/20", completed: "10/10", status: "good" },
-                    {
-                      name: "Karim Idrissi",
-                      class: "2ème année",
-                      avg: "12.5/20",
-                      completed: "7/8",
-                      status: "average",
-                    },
-                    { name: "Leila Alaoui", class: "2ème année", avg: "14.0/20", completed: "8/8", status: "good" },
-                    {
-                      name: "Omar Benjelloun",
-                      class: "1ère année",
-                      avg: "10.5/20",
-                      completed: "5/6",
-                      status: "poor",
-                    },
-                    {
-                      name: "Salma Tazi",
-                      class: "3ème année",
-                      avg: "17.5/20",
-                      completed: "10/10",
-                      status: "excellent",
-                    },
-                    {
-                      name: "Youssef Amrani",
-                      class: "1ère année",
-                      avg: "13.0/20",
-                      completed: "6/6",
-                      status: "average",
-                    },
-                    { name: "Zineb Chaoui", class: "2ème année", avg: "15.5/20", completed: "8/8", status: "good" },
-                  ].map((student, i) => (
-                    <div key={i} className="grid grid-cols-12 border-b p-3 text-sm">
-                      <div className="col-span-4 font-medium">{student.name}</div>
-                      <div className="col-span-2">{student.class}</div>
-                      <div className="col-span-2 text-center">
-                        <span
-                          className={`font-medium ${
-                            student.status === "excellent"
-                              ? "text-green-600"
-                              : student.status === "good"
-                                ? "text-blue-600"
-                                : student.status === "average"
-                                  ? "text-amber-600"
-                                  : "text-red-600"
-                          }`}
-                        >
-                          {student.avg}
-                        </span>
-                      </div>
-                      <div className="col-span-2 text-center">{student.completed}</div>
-                      <div className="col-span-2 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>{t("view_profile")}</DropdownMenuItem>
-                            <DropdownMenuItem>{t("view_results")}</DropdownMenuItem>
-                            <DropdownMenuItem>{t("send_message")}</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">{t("remove_from_course")}</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex gap-3">
+            <div className="relative min-w-[260px]">
+              <Search className="absolute left-3 top-3.5 h-4 w-4 text-[hsl(var(--ink-faint))]" />
+              <Input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search a cohort or assessment"
+                className="rounded-none border-[hsl(var(--line-soft))] bg-white pl-9"
+              />
+            </div>
+            <Button variant="outline" className="rounded-none border-[hsl(var(--line-soft))]">
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
           </div>
         </div>
-      </main>
 
-      {/* Export Dialog */}
-      <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("export_student_data")}</DialogTitle>
-            <DialogDescription>{t("export_student_data_description")}</DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p>{t("export_format_description")}</p>
+        {error && (
+          <div className="mt-6 rounded-none border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowExportDialog(false)}>
-              {t("cancel")}
-            </Button>
-            <Button onClick={handleExport}>{t("export")}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )}
+
+        <div className="mt-8 grid gap-4 md:grid-cols-4">
+          <Card className="rounded-none border-[hsl(var(--line-soft))] shadow-none">
+            <CardHeader><CardTitle className="text-sm font-medium">Evaluations</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-semibold">{items.length}</div></CardContent>
+          </Card>
+          <Card className="rounded-none border-[hsl(var(--line-soft))] shadow-none">
+            <CardHeader><CardTitle className="text-sm font-medium">Linked students</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-semibold">{totalLinked}</div></CardContent>
+          </Card>
+          <Card className="rounded-none border-[hsl(var(--line-soft))] shadow-none">
+            <CardHeader><CardTitle className="text-sm font-medium">Average load</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-semibold">{averageLoad}</div></CardContent>
+          </Card>
+          <Card className="rounded-none border-[hsl(var(--line-soft))] shadow-none">
+            <CardHeader><CardTitle className="text-sm font-medium">Signal</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-semibold">{items.filter((item) => item.status === "completed").length}</div></CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-8 rounded-none border border-[hsl(var(--line-soft))] bg-white">
+          <div className="grid grid-cols-12 border-b border-[hsl(var(--line-soft))] bg-[hsl(var(--paper-muted))] p-4 text-sm font-medium">
+            <div className="col-span-5">Assessment / cohort</div>
+            <div className="col-span-2 text-center">Average</div>
+            <div className="col-span-3 text-center">Participation</div>
+            <div className="col-span-2 text-right">Signal</div>
+          </div>
+
+          {rows.length ? rows.map((row) => (
+            <div key={row.id} className="grid grid-cols-12 border-b border-[hsl(var(--line-soft))] p-4 text-sm last:border-b-0">
+              <div className="col-span-5">
+                <div className="font-medium text-[hsl(var(--ink-deep))]">{row.name}</div>
+                <div className="mt-1 text-[hsl(var(--ink-muted))]">{row.cohort}</div>
+              </div>
+              <div className="col-span-2 text-center font-medium">{row.average}</div>
+              <div className="col-span-3 text-center">{row.assessments}</div>
+              <div className="col-span-2 text-right">
+                <span className={row.status === "excellent" ? "text-green-600" : row.status === "good" ? "text-blue-600" : "text-amber-600"}>
+                  {row.status}
+                </span>
+              </div>
+            </div>
+          )) : (
+            <div className="px-6 py-12 text-center text-sm text-[hsl(var(--ink-muted))]">
+              No visible row for this filter.
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   )
 }

@@ -15,6 +15,7 @@ import { AlertCircle, Clock, Copy, FileImage, Grip, Plus, Save, Trash2, X, Downl
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useLanguage } from "@/contexts/language-context"
 import { downloadAssessmentData } from "@/utils/download-utils"
+import { clearSession, getSession } from "@/lib/auth"
 
 // Mock assessment data for editing
 const mockAssessments = [
@@ -126,6 +127,23 @@ export default function CreateAssessment() {
   const [deadlineTime, setDeadlineTime] = useState("23:59")
   const [assessmentType, setAssessmentType] = useState("sommative")
   const [isLoading, setIsLoading] = useState(isEditing)
+  const [userName, setUserName] = useState("Professor")
+  const [saveMessage, setSaveMessage] = useState("")
+
+  useEffect(() => {
+    const session = getSession()
+    if (!session?.accessToken || !session.userId) {
+      clearSession()
+      router.replace("/login")
+      return
+    }
+
+    setUserName(
+      [session.profile?.first_name, session.profile?.last_name].filter(Boolean).join(" ") ||
+        session.profile?.email ||
+        "Professor",
+    )
+  }, [router])
 
   // Load assessment data if editing
   useEffect(() => {
@@ -202,16 +220,23 @@ export default function CreateAssessment() {
   }
 
   const handleSave = () => {
-    // In a real app, this would save to a database
-    const assessmentCode = Math.random().toString(36).substring(2, 8)
-
-    if (isEditing) {
-      alert(`${t("assessment_updated_success")}`)
-    } else {
-      alert(`${t("assessment_created_success")} ${t("access_code")}: #${assessmentCode}`)
+    const draft = {
+      title,
+      description,
+      timeLimit,
+      questions,
+      autoCorrect,
+      selectedClass,
+      selectedSubject,
+      deadlineDate,
+      deadlineTime,
+      assessmentType,
+      savedAt: new Date().toISOString(),
     }
 
-    router.push("/professor/assessments")
+    window.localStorage.setItem("evalyo_professor_draft_assessment", JSON.stringify(draft))
+    setSaveMessage(isEditing ? t("assessment_updated_success") : t("assessment_created_success"))
+    router.push("/professor/evaluations")
   }
 
   const handleDownload = () => {
@@ -222,7 +247,7 @@ export default function CreateAssessment() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <DashboardHeader userType="professor" userName="Prof. Dupont" />
+        <DashboardHeader userType="professor" userName={userName} />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
@@ -235,7 +260,7 @@ export default function CreateAssessment() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <DashboardHeader userType="professor" userName="Prof. Dupont" />
+      <DashboardHeader userType="professor" userName={userName} />
 
       <main className="flex-1">
         <div className="container py-6">
@@ -260,6 +285,14 @@ export default function CreateAssessment() {
               </Button>
             </div>
           </div>
+
+          {saveMessage && (
+            <Alert className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>{t("save")}</AlertTitle>
+              <AlertDescription>{saveMessage}</AlertDescription>
+            </Alert>
+          )}
 
           {!showPreview ? (
             <div className="grid gap-6 md:grid-cols-5">
